@@ -1,0 +1,28 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[packages]
+ipykernel = "*"
+dvc = {extras = ["gdrive"], version = "*"}
+pyarrow = "*"
+regex = "*"
+numpy = "*"
+pandas = "*"
+polars = "*"
+feature-engine = "*"
+scikit-learn = "*"
+umap-learn = {extras = ["plot"], version = "*"} 
+xgboost = "*"
+spacy = "==3.3.0"
+gensim = "*"
+optuna = "*"
+shap = "*"
+matplotlib = "*"
+altair = "==4.1.0"
+plotly = "==5.3.1"
+yfinance = "*"
+
+[requires]
+python_version = "3.8"
