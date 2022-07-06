@@ -7,7 +7,7 @@ from typing import Callable, Set, Tuple, List, Dict, Optional
 from source.modules.manage_files import ManageFiles 
 from source.config_py.config import (
     MERGE_FEATURE_FILENAMES, MERGE_EVENT_FILENAMES, TICKER_DATE_COLLECT, 
-    TICKER_TO_COLLECT, TICKER_TO_EXCLUDE 
+    TICKER_TO_COLLECT, TICKER_TO_EXCLUDE, ECONOMIC_FRED_FEATURES, 
 )
 
 
@@ -26,7 +26,7 @@ year_beg, year_end = int(date_beg[:4]), int(date_end[:4])
 def compile_features_each_ticker(
     compile_func:Callable, 
     filepath:str, 
-    ticker_to_collect:Set[str], 
+    ticker_to_collect:Set[str]=TICKER_TO_COLLECT, 
     ticker_to_exclude:Set[str]=TICKER_TO_EXCLUDE, 
     load_cache:bool=True, 
     **kwargs, 
@@ -70,6 +70,52 @@ def compile_features_each_ticker(
 
 
 # %%
+def compile_features_each_econometric(
+    compile_func:Callable, 
+    filepath:str, 
+    econometric_to_collect:Dict[str,Dict]=ECONOMIC_FRED_FEATURES, 
+    load_cache:bool=True, 
+    **kwargs, 
+) -> pd.DataFrame: 
+
+    '''Consolidate the features for each econometric.'''
+
+    cache_exist = os.path.isfile(filepath) 
+    df_compiled = pd.DataFrame() 
+    
+    # Load cache if users want to. 
+    compiled_econometric = set() 
+    if load_cache and cache_exist: 
+        df_compiled = pd.read_csv(filepath) 
+        compiled_econometric = set(df_compiled["econometric"].to_list()) 
+
+    # Track the total number of econometric to collect. 
+    econometric_names = set(econometric_to_collect.keys()).difference(compiled_econometric) 
+    save_round, max_len = 5, len(econometric_names) - 1 
+
+    # Modify the default arguments for the (rank_func). 
+    func = functools.partial(compile_func, **kwargs) 
+
+    for i, (econometric, parameters) in enumerate(econometric_to_collect.items()): 
+        # Skip the API call if users want to load the cache and the econometric already exists. 
+        if compiled_econometric and econometric in compiled_econometric: 
+            print(f"Data already exists. Skipped ({econometric}).") 
+            continue 
+        
+        # Get feature data for each econometric and consolidate them. 
+        df = func(econometric, parameters) 
+        df_compiled = pd.concat([df_compiled, df], axis="index", join="outer", ignore_index=True) 
+
+        # Save the data at every N round iteration. 
+        if i % save_round == 0 or max_len - i < save_round: 
+            df_compiled.to_csv(filepath, index=False) 
+            print(f"Save to ({filepath}).") 
+
+    return df_compiled 
+
+
+
+# %%
 def concat_eventdates(event_filenames:Dict[str,str]=MERGE_EVENT_FILENAMES) -> pd.DataFrame: 
     '''Concat all the event dates from various datasets.''' 
 
@@ -86,7 +132,7 @@ def concat_eventdates(event_filenames:Dict[str,str]=MERGE_EVENT_FILENAMES) -> pd
 
 
 # %% 
-def add_eventflags(df:pd.DataFrame, eventdates:pd.DataFrame) -> pd.DataFrame:
+def add_eventflag(df:pd.DataFrame, eventdates:pd.DataFrame) -> pd.DataFrame:
     '''Add flags for each event according to matching rows in ticker data.'''
 
     for colname in eventdates.columns: 

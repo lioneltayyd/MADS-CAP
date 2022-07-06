@@ -74,10 +74,6 @@ def compute_forward_return(
     for ticker in df["ticker"].unique(): 
         print(f"Compute forward return for ({ticker}).") 
 
-        # Need to process it ticker by ticker. Otherwise the rolling 
-        # calculation will affect the other ticker data. 
-        boo_ticker = df["ticker"] == ticker 
-
         for keyname in return_cats.keys(): 
             
             for lag in returns_lags: 
@@ -88,28 +84,37 @@ def compute_forward_return(
                 volname = f"volt_{return_cat}_lag{lag}" 
 
                 # Compute the ticker price return. 
-                df.loc[boo_ticker, retname] = df \
-                    .pipe(return_cats[keyname]) \
+                df[retname] = df \
+                    .groupby(["ticker"])["close"] \
+                    .pct_change(periods=lag) \
                     .pipe(lambda x: x.clip(lower=x.quantile(trim_out), upper=x.quantile(1 - trim_out))) \
                     .add(1) \
                     .pow(1 / lag) \
                     .sub(1) 
 
-                # Compute the tscore for price change. Ignore negative sign if we are interested in the movement, not direction. 
-                ret_ravg = df[retname].rolling(window=window_avg, min_periods=period_avg, win_type=None).mean() 
-                ret_rstd = df[retname].rolling(window=window_std, min_periods=period_std, win_type=None).std(ddof=1) 
-                df[tscname] = ((df[retname] - ret_ravg) / ret_rstd).abs() 
-
+                # Compute the tscore for price change. 
+                ret_ravg = df \
+                    .groupby(["ticker"])[retname] \
+                    .rolling(window=window_avg, min_periods=period_avg, win_type=None) \
+                    .mean() \
+                    .reset_index(drop=True) 
+                ret_rstd = df \
+                    .groupby(["ticker"])[retname] \
+                    .rolling(window=window_std, min_periods=period_std, win_type=None) \
+                    .std(ddof=1) \
+                    .reset_index(drop=True) 
+                df[tscname] = (df[retname] - ret_ravg) / ret_rstd 
+                
                 # # Comment this out. Might not needed. 
                 # # Define the volatility or price movement scale or class. 
                 # df[volname] = 1 
-                # df.loc[df[tscname] >= volt_hi, volname] = 2 
-                # df.loc[df[tscname] <= volt_lo, volname] = 0 
+                # df.loc[df[tscname].abs() >= volt_hi, volname] = 2 
+                # df.loc[df[tscname].abs() <= volt_lo, volname] = 0 
 
                 # Create autocorrsselated features for the past N days. 
                 for autolag in autocorr_lags: 
-                    df[f"{retname}_autolag{autolag}"] = df[retname].shift(lag) 
-                    df[f"{tscname}_autolag{autolag}"] = df[tscname].shift(lag) 
-                    df[f"{volname}_autolag{autolag}"] = df[volname].shift(lag) 
+                    df[f"{retname}_autolag{autolag}"] = df.groupby(["ticker"])[retname].shift(lag) 
+                    df[f"{tscname}_autolag{autolag}"] = df.groupby(["ticker"])[tscname].shift(lag) 
+                    df[f"{volname}_autolag{autolag}"] = df.groupby(["ticker"])[volname].shift(lag) 
 
     return df 

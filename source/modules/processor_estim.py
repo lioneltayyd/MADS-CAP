@@ -88,7 +88,7 @@ def search_opt(estimator, X, y, param_dist:dict, bayes:bool=True, n_trials:int=5
 
 
 # %% 
-def multiverse_analysis(X, y, n_trials:int=50, verbose:int=2, **kwargs) -> pd.DataFrame: 
+def multiverse_analysis(X, y, n_trials:int=50, verbose:int=2) -> pd.DataFrame: 
     '''
     To perform multiverse analysis for various combination of components and models. 
     '''
@@ -111,11 +111,11 @@ def multiverse_analysis(X, y, n_trials:int=50, verbose:int=2, **kwargs) -> pd.Da
             for component in components: 
                 if component == "newstheme": 
                     var_proc.extend(["theme_sub"]) 
-                    pipeline.append(("extract_newstheme", ExtractTopic(kwargs["mlpipe_topic"], var_proc="theme_sub", var_name="theme"))) 
+                    pipeline.append(("extract_newstheme", ...)) 
                     ohencode.append("theme") 
                 elif component == "sentiment": 
                     var_proc.extend(["headline"]) 
-                    pipeline.append(("extract_sentiment", ExtractSentiment(kwargs["mlpipe_spacy"], var_proc="headline", var_name="sentiment"))) 
+                    pipeline.append(("extract_sentiment", ...)) 
                     ohencode.append("sentiment") 
                 elif component == "autocorrs": 
                     var_proc.extend([f"spy_tscore_c2c_lag_{lag}" for lag in range(1,4,1)]) 

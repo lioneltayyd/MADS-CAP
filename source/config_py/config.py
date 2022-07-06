@@ -39,7 +39,6 @@ MERGE_EVENT_FILENAMES = {
 	"economic_reported_date.csv": DIR_DATASET_ECONOMIC_REPORT, 
 	"firsttrdrday_ofmonth.csv": DIR_DATASET_OBSERVANCE, 
 	"observance_dates_ext.csv": DIR_DATASET_OBSERVANCE, 
-	# "observance_dates.csv": DIR_DATASET_OBSERVANCE, 
 	"santa_rally.csv": DIR_DATASET_OBSERVANCE, 
 	"triple_witching_week.csv": DIR_DATASET_OBSERVANCE, 
 	# "geopolitic_dates.csv": DIR_DATASET_GEOPOLITIC, 
@@ -157,6 +156,173 @@ RECESSION_PERIOD = [
 YIELD_CURVE_INVERSION = [
 
 ]
+
+# -------------------------------------------------------
+# Define the economic data to collect 
+# -------------------------------------------------------
+
+ECONOMIC_FRED_FEATURES = {
+	# # Monetary policy. 
+	"fed_ffr": dict(
+		series_id="FEDFUNDS",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+	"mortgage_rate_30yr": dict(
+		series_id="MORTGAGE30US",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+	"mortgage_rate_15yr": dict(
+		series_id="MORTGAGE15US",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+	"prime_loan_rate": dict(
+		series_id="DPRIME",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+
+	# # Bond yield. 
+	"bond_yield_3mo": dict(
+		series_id="DGS3MO",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+	"bond_yield_2yr": dict(
+		series_id="DGS2",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+	"bond_yield_5yr": dict(
+		series_id="DGS5",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+	"bond_yield_10yr": dict(
+		series_id="DGS10",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+	"bond_yield_30yr": dict(
+		series_id="DGS30",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+	"bond_yield_10yr_minus_ffr": dict(
+		series_id="T10YFF",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+	"bond_yield_10yr_minus_3mo": dict(
+		series_id="T10Y3M",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+	"bond_yield_10yr_minus_2yr": dict(
+		series_id="T10Y2Y",
+		units="lin",
+		frequency="m",
+		aggregation_method="avg"
+	), 
+} 
+
+# ECONOMIC_FRED_FEATURES = {
+#     "employment": [
+#         "unemployment_rate",
+#         "unemployment_natural_rate",
+#     ], 
+#     "household": [
+#         "personal_dispensable_income_yoy",
+#         "personal_consumption_yoy",
+#         "personal_consumption_real_yoy",
+#         "personal_consumption_ex_food_energy_yoy",
+#     ], 
+#     "manufacturer": [
+# 		"industry_production_mom", 
+# 		"capacity_utilisation", 
+# 		"manufacturer_production_mom", 
+# 		"manufacturer_new_order_yoy", 
+# 		"manufacturer_new_order_mom", 
+# 		"manufacturer_new_order_ex_def_yoy", 
+# 		"manufacturer_new_order_ex_def_mom", 
+# 		"manufacturer_new_order_ex_trans_yoy", 
+# 		"manufacturer_new_order_ex_trans_mom", 
+# 		"manufacturer_inventory_sales_ratio", 
+#     ], 
+#     "business": [
+#         "online_sales_yoy",
+#         "retail_sales_yoy",
+#         "retail_sales_ex_auto_yoy", 
+#         "vehicle_sales_yoy",
+#         "business_inventory_sales_ratio",
+#         "retail_inventory_sales_ratio",
+#     ], 
+#     "housing": [
+#         "housing_starts",
+#         "housing_starts_yoy",
+#         "building_permit",
+#         "new_home_sales",
+#         "new_home_sales_yoy",
+#     ], 
+#     "gov_fiscal": [
+#         "gdp_us_qoq",
+#         "gdp_us_yoy",
+#         "gdp_real_us_qoq", 
+#         "gdp_real_us_yoy",
+#     ], 
+#     "monetary": [
+#         "fed_ffr",
+#         "mortgage_rate_30yr",
+#         "mortgage_rate_15yr",
+#         "prime_loan_rate",
+#         "excess_reserve_depo",
+#         "liquidity_m1_yoy",
+#         "velocity_m1",
+#         "liquidity_m2_yoy",
+#         "velocity_m2",
+#         "monetary_base", 
+#     ], 
+#     "price": [
+#         "gdp_deflator_us_yoy",
+#         "personal_consumption_deflator_yoy",
+#         "consumer_cpi_yoy",
+#         "consumer_cpi_ex_food_energy_yoy",
+#         "producer_ppi_yoy",
+#         "producer_ppi_ex_food_energy_yoy", 
+#         "case_shiller_hpi",
+#         "case_shiller_hpi_yoy",
+#     ], 
+#     "bond_yield": [
+#         "bond_yield_3mo",
+#         "bond_yield_2yr",
+#         "bond_yield_5yr",
+#         "bond_yield_10yr",
+#         "bond_yield_30yr",
+#         "bond_yield_10yr_minus_ffr",
+#         "bond_yield_10yr_minus_3mo",
+#         "bond_yield_10yr_minus_2yr",
+#     ], 
+# } 
+
+# ECONOMIC_QUANT_FEATURES = {
+#     "manufacturer": [
+#         "ism_pmi_manufacturer",
+#         "ism_pmi_services",
+#     ], 
+# } 
 
 # -------------------------------------------------------
 # Define the technical indicator data to collect 
