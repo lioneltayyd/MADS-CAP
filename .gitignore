@@ -151,9 +151,10 @@ Icon*
 
 # Ignore custom folders or files. 
 .dvc/config 
-.dockerignore 
+.docker ignore 
 docker 
 model 
+Dataset
 docs/images
 docs/proposal
 docs/diagram

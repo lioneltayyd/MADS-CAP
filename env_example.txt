@@ -2,3 +2,4 @@
 # Fill in the variable and save as (.env) not (env_example.txt) 
 # ----------------------------------------------------------------------
 
+ALPHA_VANTAGE_API_SECRET=""
