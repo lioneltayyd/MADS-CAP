@@ -6,7 +6,7 @@ from fredapi import Fred
 
 # Custom configs. 
 from source.config_py.config import (
-    TICKER_DATE_COLLECT 
+    TICKER_DATE_COLLECT, ECONOMIC_FREQ
 )
 
 
@@ -35,10 +35,11 @@ def get_econometric_fred(
     year_beg, year_end = daterange 
 
     df_econometric = datasource \
-        .get_series(observation_start=year_beg, observation_end=year_end **parameters) \
+        .get_series(observation_start=year_beg, observation_end=year_end, **parameters) \
         .reset_index(drop=False) 
 
     df_econometric.columns = ["date", "value"] 
     df_econometric["econometric"] = econometric 
+    df_econometric["frequency"] = ECONOMIC_FREQ[parameters["frequency"]] 
 
     return df_econometric 

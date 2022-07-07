@@ -107,7 +107,7 @@ def compile_features_each_econometric(
         df_compiled = pd.concat([df_compiled, df], axis="index", join="outer", ignore_index=True) 
 
         # Save the data at every N round iteration. 
-        if i % save_round == 0 or max_len - i < save_round: 
+        if i % save_round == 0 or max_len - i < save_round:             
             df_compiled.to_csv(filepath, index=False) 
             print(f"Save to ({filepath}).") 
 

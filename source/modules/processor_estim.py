@@ -1,9 +1,11 @@
 # %% 
 # Python modules. 
+import re, scipy, optuna 
 import numpy as np 
 import pandas as pd 
-import scipy 
-import optuna 
+from typing import List, Dict, Any
+import xgboost as xgb
+from sklearn.linear_model import ElasticNet 
 from sklearn.base import BaseEstimator, TransformerMixin 
 from sklearn.utils.validation import check_is_fitted 
 from feature_engine.encoding import OneHotEncoder 
@@ -49,7 +51,17 @@ class ColumnSelector(BaseEstimator, TransformerMixin):
 
 
 # %% 
-def search_opt(estimator, X, y, param_dist:dict, bayes:bool=True, n_trials:int=50, scoring:str="neg_root_mean_squared_error", verbose:int=2): 
+def search_opt(
+    estimator, 
+    X, 
+    y, 
+    param_dist:dict, 
+    cv:List,
+    bayes:bool=True, 
+    n_trials:int=50, 
+    scoring:str="neg_root_mean_squared_error", 
+    verbose:int=2
+): 
     '''
     For hyperparameter tuning. Check out the following for guidance: 
     Bayesian: 
@@ -59,13 +71,13 @@ def search_opt(estimator, X, y, param_dist:dict, bayes:bool=True, n_trials:int=5
     # Setup the optimizer. 
     if bayes: 
         search_cv = optuna.integration.OptunaSearchCV(
-            estimator, param_dist, cv=10, n_trials=n_trials, 
+            estimator, param_dist, cv=cv, n_trials=n_trials, 
             scoring=scoring, refit=True, timeout=600, verbose=verbose, 
             error_score="raise", random_state=PARAM_SEED, 
         ) 
     else: 
         search_cv = GridSearchCV(
-            estimator, param_dist, cv=10, scoring=scoring, 
+            estimator, param_dist, cv=cv, scoring=scoring, 
             refit=True, verbose=verbose, 
         ) 
     
@@ -88,7 +100,15 @@ def search_opt(estimator, X, y, param_dist:dict, bayes:bool=True, n_trials:int=5
 
 
 # %% 
-def multiverse_analysis(X, y, n_trials:int=50, verbose:int=2) -> pd.DataFrame: 
+def multiverse_analysis(
+    X:pd.DataFrame, 
+    y:pd.DataFrame,
+    cv:List,
+    experiment_model:Dict[str,Any]=EXPERIMENT_MODEL,
+    experiment_comps:Dict[str,Any]=EXPERIMENT_COMPS,
+    n_trials:int=50, 
+    verbose:int=2
+) -> pd.DataFrame: 
     '''
     To perform multiverse analysis for various combination of components and models. 
     '''
@@ -99,26 +119,23 @@ def multiverse_analysis(X, y, n_trials:int=50, verbose:int=2) -> pd.DataFrame:
     df_performances = pd.DataFrame(columns=colnames) 
 
     # Explore the same set of componenets for each model choice. 
-    for mlname, dict_mlparam in EXPERIMENT_MODEL.items(): 
+    for mlname, dict_mlparam in experiment_model.items(): 
+        print(f"Performing search for ({mlname})") 
 
         # Experiment model training using different set of components. 
-        for components in EXPERIMENT_COMPS: 
-            pipeline, var_proc, ohencode = [], [], [] 
+        for components in experiment_comps: 
+            pipeline = [] 
+            var_proc = [] 
+            ohencode = [] 
 
             # Add the defined component to the pipeline. In the future, we can map the 
             # component name to the function using dictionary to dynamically obtain 
             # the function for specific component instead of hard code them this way. 
-            for component in components: 
-                if component == "newstheme": 
-                    var_proc.extend(["theme_sub"]) 
-                    pipeline.append(("extract_newstheme", ...)) 
-                    ohencode.append("theme") 
-                elif component == "sentiment": 
-                    var_proc.extend(["headline"]) 
-                    pipeline.append(("extract_sentiment", ...)) 
-                    ohencode.append("sentiment") 
-                elif component == "autocorrs": 
-                    var_proc.extend([f"spy_tscore_c2c_lag_{lag}" for lag in range(1,4,1)]) 
+            for component, chosen_features in components.items(): 
+                if component == "econometric": 
+                    var_proc.extend(chosen_features) 
+                elif component == "rp_sentiment": 
+                    var_proc.extend(chosen_features) 
 
             # Transform categorical variable into OHE if any. 
             if ohencode: 
@@ -126,12 +143,12 @@ def multiverse_analysis(X, y, n_trials:int=50, verbose:int=2) -> pd.DataFrame:
         
             # Construct the pipeline. 
             mlpipe_estim = Pipeline([("select_col", ColumnSelector(var_proc=var_proc))] + pipeline) 
-            X_transformed = mlpipe_estim.fit_transform(X) 
+            X_trans = mlpipe_estim.fit_transform(X) 
 
             # Hyperparameter optimisation. 
+            model, param = eval(dict_mlparam["model"]), eval(dict_mlparam["param_dist"]) 
             searchres = search_opt(
-                dict_mlparam["model"], X_transformed, y, dict_mlparam["param_dist"], 
-                bayes=dict_mlparam["bayes_opt"], n_trials=n_trials, verbose=verbose
+                model, X_trans, y, param, cv, dict_mlparam["bayes_opt"], n_trials, verbose=verbose
             ) 
 
             # Track the performance for various combination of components and model choice. 

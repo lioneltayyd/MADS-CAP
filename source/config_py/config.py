@@ -1,9 +1,3 @@
-import optuna 
-import xgboost as xgb
-from sklearn.linear_model import ElasticNet 
-
-
-
 # -------------------------------------------------------
 # Define directory and file paths 
 # -------------------------------------------------------
@@ -28,7 +22,8 @@ DIR_DATASET_WRDS_COMPUSTAT = f"{DIR_DATASET}/wrds_compustat"
 
 # Directory path for saving and loading models. 
 DIR_MLMODEL = "model" 
-DIR_MLMODEL_MLESTIM = f"{DIR_MLMODEL}/mktmv_estimator" 
+DIR_MLMODEL_MLESTIM = f"{DIR_MLMODEL}/ml_estimator" 
+DIR_MLMODEL_MLPERFORMANCE = f"{DIR_MLMODEL}/ml_performance" 
 
 # Define the datasets you want to or merge with as features 
 # for the ticker data. These events should only contain the
@@ -91,6 +86,7 @@ TICKER_DATE_COLLECT = "1998-12-01", "2022-02-28"
 # assign them to (TICKER_TO_COLLECT) variable. 
 TICKER_FROM_SNP = True 
 
+# Uncomment the any of the feature below if you want to use it. 
 # Define the list of tickers we are interested to investigate on. 
 TICKER_TO_COLLECT = set([
 	# # Semiconductor. 
@@ -161,6 +157,18 @@ YIELD_CURVE_INVERSION = [
 # Define the economic data to collect 
 # -------------------------------------------------------
 
+# Not important. Just for mapping. 
+ECONOMIC_FREQ = {
+	"d"	: "daily", 
+	"w"	: "weekly", 
+	"bw": "biweekly", 
+	"m"	: "monthly", 
+	"q"	: "quarterly", 
+	"sa": "semiannual", 
+}
+
+# Uncomment the any of the feature below if you want to use it. 
+# Econometric to extract from FRED API. 
 ECONOMIC_FRED_FEATURES = {
 	# # Monetary policy. 
 	"fed_ffr": dict(
@@ -192,143 +200,75 @@ ECONOMIC_FRED_FEATURES = {
 	"bond_yield_3mo": dict(
 		series_id="DGS3MO",
 		units="lin",
-		frequency="m",
+		frequency="d",
 		aggregation_method="avg"
 	), 
 	"bond_yield_2yr": dict(
 		series_id="DGS2",
 		units="lin",
-		frequency="m",
+		frequency="d",
 		aggregation_method="avg"
 	), 
 	"bond_yield_5yr": dict(
 		series_id="DGS5",
 		units="lin",
-		frequency="m",
+		frequency="d",
 		aggregation_method="avg"
 	), 
 	"bond_yield_10yr": dict(
 		series_id="DGS10",
 		units="lin",
-		frequency="m",
+		frequency="d",
 		aggregation_method="avg"
 	), 
 	"bond_yield_30yr": dict(
 		series_id="DGS30",
 		units="lin",
-		frequency="m",
+		frequency="d",
 		aggregation_method="avg"
 	), 
 	"bond_yield_10yr_minus_ffr": dict(
 		series_id="T10YFF",
 		units="lin",
-		frequency="m",
+		frequency="d",
 		aggregation_method="avg"
 	), 
 	"bond_yield_10yr_minus_3mo": dict(
 		series_id="T10Y3M",
 		units="lin",
-		frequency="m",
+		frequency="d",
 		aggregation_method="avg"
 	), 
 	"bond_yield_10yr_minus_2yr": dict(
 		series_id="T10Y2Y",
 		units="lin",
-		frequency="m",
+		frequency="d",
 		aggregation_method="avg"
 	), 
+
+	# Consumer. 
+    "consumer_sentiment_umich": dict(
+        series_id="UMCSENT", 
+        units="lin",
+        frequency="m",
+        aggregation_method="avg"
+	), 
+    "consumer_confidence_oecd": dict(
+        series_id="CSCICP03USM665S", 
+        units="lin",
+        frequency="m",
+        aggregation_method="avg"
+    ), 
 } 
-
-# ECONOMIC_FRED_FEATURES = {
-#     "employment": [
-#         "unemployment_rate",
-#         "unemployment_natural_rate",
-#     ], 
-#     "household": [
-#         "personal_dispensable_income_yoy",
-#         "personal_consumption_yoy",
-#         "personal_consumption_real_yoy",
-#         "personal_consumption_ex_food_energy_yoy",
-#     ], 
-#     "manufacturer": [
-# 		"industry_production_mom", 
-# 		"capacity_utilisation", 
-# 		"manufacturer_production_mom", 
-# 		"manufacturer_new_order_yoy", 
-# 		"manufacturer_new_order_mom", 
-# 		"manufacturer_new_order_ex_def_yoy", 
-# 		"manufacturer_new_order_ex_def_mom", 
-# 		"manufacturer_new_order_ex_trans_yoy", 
-# 		"manufacturer_new_order_ex_trans_mom", 
-# 		"manufacturer_inventory_sales_ratio", 
-#     ], 
-#     "business": [
-#         "online_sales_yoy",
-#         "retail_sales_yoy",
-#         "retail_sales_ex_auto_yoy", 
-#         "vehicle_sales_yoy",
-#         "business_inventory_sales_ratio",
-#         "retail_inventory_sales_ratio",
-#     ], 
-#     "housing": [
-#         "housing_starts",
-#         "housing_starts_yoy",
-#         "building_permit",
-#         "new_home_sales",
-#         "new_home_sales_yoy",
-#     ], 
-#     "gov_fiscal": [
-#         "gdp_us_qoq",
-#         "gdp_us_yoy",
-#         "gdp_real_us_qoq", 
-#         "gdp_real_us_yoy",
-#     ], 
-#     "monetary": [
-#         "fed_ffr",
-#         "mortgage_rate_30yr",
-#         "mortgage_rate_15yr",
-#         "prime_loan_rate",
-#         "excess_reserve_depo",
-#         "liquidity_m1_yoy",
-#         "velocity_m1",
-#         "liquidity_m2_yoy",
-#         "velocity_m2",
-#         "monetary_base", 
-#     ], 
-#     "price": [
-#         "gdp_deflator_us_yoy",
-#         "personal_consumption_deflator_yoy",
-#         "consumer_cpi_yoy",
-#         "consumer_cpi_ex_food_energy_yoy",
-#         "producer_ppi_yoy",
-#         "producer_ppi_ex_food_energy_yoy", 
-#         "case_shiller_hpi",
-#         "case_shiller_hpi_yoy",
-#     ], 
-#     "bond_yield": [
-#         "bond_yield_3mo",
-#         "bond_yield_2yr",
-#         "bond_yield_5yr",
-#         "bond_yield_10yr",
-#         "bond_yield_30yr",
-#         "bond_yield_10yr_minus_ffr",
-#         "bond_yield_10yr_minus_3mo",
-#         "bond_yield_10yr_minus_2yr",
-#     ], 
-# } 
-
-# ECONOMIC_QUANT_FEATURES = {
-#     "manufacturer": [
-#         "ism_pmi_manufacturer",
-#         "ism_pmi_services",
-#     ], 
-# } 
 
 # -------------------------------------------------------
 # Define the technical indicator data to collect 
 # -------------------------------------------------------
 
-# The parameters are defined here: https://github.com/RomelTorres/alpha_vantage/blob/develop/alpha_vantage/techindicators.py
+# Uncomment the any of the feature below if you want to use it. 
+# The parameters are defined here: 
+# 	- https://github.com/RomelTorres/alpha_vantage/blob/develop/alpha_vantage/techindicators.py
+
 TECHNIND_FEATURES = {
 	# # Example. Write the function name and parameters. 
 	"macd": dict(
@@ -352,6 +292,7 @@ TECHNIND_FEATURES = {
 # Define candlesticks   
 # -------------------------------------------------------
 
+# Uncomment the any of the feature below if you want to use it. 
 # Taken from (TA-Lib). 
 # 	– http://mrjbq7.github.io/ta-lib/func_groups/pattern_recognition.html 
 
@@ -529,6 +470,7 @@ FINANCIAL_COMPUTE_RATIO = {
 # 		"func": "function_name", 
 # 		"param": dict(arg=value), 
 # 		"benchmark": ">= .03", 
+# 		"weightage": 1, 
 # 	}, 
 FINANCIAL_EVAL_QUALITY = {
 	"growth_totalRevenue": {
@@ -607,62 +549,99 @@ PARAM_LANG = "en"
 # For multiverse analysis 
 # -------------------------------------------------------
 
-# Number of trials to run the hyperparameter optimisation. 
-EXPERIMENT_TRIAL = 25 
+# Define different set of components. The list contains a combination of components. 
+# Each combination of component contains multiple components (dict). For each component, 
+# key == component name, value == features. 
 
-# Define different set of components. 
-EXPERIMENT_COMPS = [
-	["newstheme"], 
-	["sentiment"], 
-	["autocorrs"], 
-	["newstheme", "sentiment"], 
-	["autocorrs", "newstheme"], 
-	["autocorrs", "sentiment"], 
-	["newstheme", "sentiment", "autocorrs"], 
+EXPERIMENT_COMPS = [ 
+	{
+		"econometric": [
+			"econ_bond_yield_10yr",
+			"econ_bond_yield_10yr_minus_2yr",
+			"econ_bond_yield_10yr_minus_3mo",
+			"econ_bond_yield_10yr_minus_ffr",
+			"econ_bond_yield_2yr",
+			"econ_bond_yield_30yr",
+			"econ_bond_yield_3mo",
+			"econ_bond_yield_5yr",
+			"econ_consumer_confidence_oecd",
+			"econ_consumer_sentiment_umich",
+			"econ_fed_ffr",
+			"econ_mortgage_rate_15yr",
+			"econ_mortgage_rate_30yr",
+			"econ_prime_loan_rate",
+		] 
+	},
+
+	# # Add your list of components below. 
+
+	# {
+	# 	"econometric": [
+	# 		"econ_bond_yield_10yr",
+	# 		"econ_bond_yield_10yr_minus_2yr",
+	# 		"econ_bond_yield_10yr_minus_3mo",
+	# 		"econ_bond_yield_10yr_minus_ffr",
+	# 		"econ_bond_yield_2yr",
+	# 		"econ_bond_yield_30yr",
+	# 		"econ_bond_yield_3mo",
+	# 		"econ_bond_yield_5yr",
+	# 		"econ_consumer_confidence_oecd",
+	# 		"econ_consumer_sentiment_umich",
+	# 		"econ_fed_ffr",
+	# 		"econ_mortgage_rate_15yr",
+	# 		"econ_mortgage_rate_30yr",
+	# 		"econ_prime_loan_rate",
+	# 	], 
+	# 	"rp_sentiment": [
+	# 		"rp_ess",
+	# 		"rp_aes",
+	# 		"rp_css",
+	# 	] 
+	# },
 ]
 
 # Assign different model choices and default parameters to experiment with. 
 EXPERIMENT_MODEL = {
 	# ElasticNet. 
 	"els": {
-		"model": ElasticNet(
+		"model": '''ElasticNet(
 			alpha=1, l1_ratio=.5, max_iter=5000, random_state=PARAM_SEED
-		), 
-		"param_dist": {
+		)''', 
+		"param_dist": '''{
 			"l1_ratio"  : [.5, .3, .1], 
-		}, 
+		}''', 
 		"bayes_opt": False, 
 	}, 
 	# Random Forest. 
 	"rfr": {
-		"model": xgb.XGBRFRegressor(
+		"model": '''xgb.XGBRFRegressor(
 			learning_rate=1, n_estimators=100, max_depth=8, base_score=0.5, 
 			colsample_bynode=.5, reg_lambda=0.1, reg_alpha=1.0, min_split_loss=0.05,
 			min_child_weight=1, subsample=0.5, tree_method="auto", booster="gbtree", 
 			num_parallel_tree=2, objective="reg:squarederror", eval_metric="rmse", 
 			seed=PARAM_SEED, 
-		), 
-		"param_dist": {
+		)''', 
+		"param_dist": '''{
 			"max_depth"         : optuna.distributions.IntUniformDistribution(3, 8), 
 			"n_estimators"      : optuna.distributions.IntUniformDistribution(100, 500), 
 			"min_child_weight"  : optuna.distributions.IntUniformDistribution(1, 20), 
-		}, 
+		}''', 
 		"bayes_opt": True, 
 	}, 
 	# XGBoost. 
 	"xgb": {
-		"model": xgb.XGBRegressor(
+		"model": '''xgb.XGBRegressor(
 			learning_rate=0.001, n_estimators=100, max_depth=8, base_score=0.5, 
 			reg_lambda=0.1, reg_alpha=1.0, min_split_loss=0.05, min_child_weight=1, 
 			subsample=0.5, tree_method="auto", booster="gbtree", num_parallel_tree=2, 
 			objective="reg:squarederror", eval_metric="rmse", seed=PARAM_SEED, 
-		), 
-		"param_dist": {
+		)''', 
+		"param_dist": '''{
 			"learning_rate"     : optuna.distributions.LogUniformDistribution(1e-4, 1e-2), 
 			"max_depth"         : optuna.distributions.IntUniformDistribution(3, 8), 
 			"n_estimators"      : optuna.distributions.IntUniformDistribution(100, 500), 
 			"min_child_weight"  : optuna.distributions.IntUniformDistribution(1, 20), 
-		}, 
+		}''', 
 		"bayes_opt": True, 
 	}, 
 }

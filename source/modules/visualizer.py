@@ -88,7 +88,7 @@ def plot_discre_dist(data, x:str, format_text:str=".2f"):
 
 
 # %% 
-def plot_multiverse_analysis(data, x:str, y:str, err_minmax:tuple, xlim:list=[0,1.2], format_text:str=".3f"): 
+def plot_multiverse_analysis(data, x:str, y:str, err_minmax:tuple, format_text:str=".3f"): 
 	height, width = 400, 800 
 	chart_title = "Multiverse Analysis Result (95% confidence interval)" 
 	sort_experiment = data[y].to_list() 
@@ -99,7 +99,6 @@ def plot_multiverse_analysis(data, x:str, y:str, err_minmax:tuple, xlim:list=[0,
 			x=alt.X(
 				f"{x}:Q", 
 				axis=alt.Axis(title=x, titleFontSize=14, labelFontSize=10, labelAngle=0), 
-				scale=alt.Scale(domain=xlim), 
 			),
 			y=alt.Y(
 				f"{y}:N", 

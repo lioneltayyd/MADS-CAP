@@ -23,7 +23,7 @@ class ManageFiles():
 		print(f"Write to ({filename})") 
 
 		# Check directories. 
-		self._get_ready_for_file_operation() 
+		self._get_ready_for_file_operation(dirpath) 
 
 		# Write files. 
 		filepath = os.path.join(dirpath, filename) 
@@ -40,7 +40,7 @@ class ManageFiles():
 		print(f"Read from ({filename})") 
 
 		# Check directories. 
-		self._get_ready_for_file_operation() 
+		self._get_ready_for_file_operation(dirpath) 
 
 		# Read files. 
 		filepath = os.path.join(dirpath, filename) 
@@ -59,7 +59,7 @@ class ManageFiles():
 		print(f"Save to ({filename})") 
 
 		# Check directories. 
-		self._get_ready_for_file_operation()
+		self._get_ready_for_file_operation(dirpath)
 
 		filepath = os.path.join(dirpath, filename) 
 		with open(filepath, "wb") as f: 
@@ -72,7 +72,7 @@ class ManageFiles():
 		print(f"Load from ({filename})") 
 
 		# Check directories. 
-		self._get_ready_for_file_operation()
+		self._get_ready_for_file_operation(dirpath)
 
 		filepath = os.path.join(dirpath, filename) 
 		with open(filepath, "rb") as f: 
@@ -85,7 +85,7 @@ class ManageFiles():
 		print(f"Save object ({obj_name}).") 
 
 		# Check directories. 
-		self._get_ready_for_file_operation() 
+		self._get_ready_for_file_operation(dirpath) 
 
 		# Load the current version and get the dev folder. 
 		dev_status, version = self.resume_version(dirpath, dev_status=dev_status) 
@@ -106,7 +106,7 @@ class ManageFiles():
 		print(f"Load object ({obj_name}).") 
 
 		# Check directories. 
-		self._get_ready_for_file_operation() 
+		self._get_ready_for_file_operation(dirpath) 
 
 		# Load the model specific version and get the dev folder. 
 		dev_status, version = self.resume_version(dirpath, dev_status=dev_status) 
@@ -123,7 +123,7 @@ class ManageFiles():
 		'''For versioning.''' 
 
 		# Check directories. 
-		self._get_ready_for_file_operation() 
+		self._get_ready_for_file_operation(dirpath) 
 		
 		dev_status = "dev" if dev_status else "prod" 
 		filepath = os.path.join(dirpath, dev_status, "VERSION") 
@@ -147,11 +147,11 @@ class ManageFiles():
 			return dev_status, version 
 
 
-	def _get_ready_for_file_operation(self):
+	def _get_ready_for_file_operation(self, dirpath:str):
 		'''Handles the necessary checks prior to any file operation.'''
 
 		self._confirm_current_working_directory()
-		self._confirm_dataset_directory() 
+		self._confirm_dataset_directory(dirpath) 
 
 
 	def _confirm_current_working_directory(self):
@@ -161,18 +161,19 @@ class ManageFiles():
 			os.chdir("..") 
 
 
-	def _confirm_dataset_directory(self):
+	def _confirm_dataset_directory(self, dirpath:str):
 		'''Checks for existince of dataset directory and creates if needed.'''
 
 		os.makedirs(self.dataset_dir, exist_ok=True) 
 		os.makedirs(self.mlmodel_dir, exist_ok=True) 
+		os.makedirs(dirpath, exist_ok=True) 
 
 
-	def _confirm_version_exist(self, dir:str, dev_status:bool=True): 
+	def _confirm_version_exist(self, dirpath:str, dev_status:bool=True): 
 		'''Checks for existince of directories and version and initiate them if needed.''' 
 
 		dev_status = "dev" if dev_status else "prod" 
-		path = os.path.join(dir, dev_status) 
+		path = os.path.join(dirpath, dev_status) 
 
 		# Create the directory. 
 		if not os.path.exists(path): 
