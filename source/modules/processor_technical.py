@@ -71,6 +71,6 @@ def get_candlesticks(df:pd.DataFrame, features:List[str]=CANDLESTICK_FEATURES) -
 
 	for feature in features: 
 		open, high, low, close = df["open"], df["high"], df["low"], df["close"] 
-		df[feature.lower()] = eval(f'''talib.{feature}(open, high, low, close)''') 
+		df[f"candle_{feature.lower()}"] = eval(f'''talib.{feature}(open, high, low, close)''') 
 
 	return df 

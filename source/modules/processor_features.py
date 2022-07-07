@@ -136,14 +136,14 @@ def add_eventflag(df:pd.DataFrame, eventdates:pd.DataFrame) -> pd.DataFrame:
     '''Add flags for each event according to matching rows in ticker data.'''
 
     for colname in eventdates.columns: 
-        df[colname] = 0 
+        df[f"event_{colname}"] = 0 
 
         # Ensure the datetime is converted to str to be able to match dates. 
         df["date"], eventdates[colname] = df["date"].astype(str), eventdates[colname].astype(str) 
         
         # Flag matching dates with 1. 
         boo_dates = df["date"].isin(eventdates[colname].values) 
-        df.loc[boo_dates, colname] = 1 
+        df.loc[boo_dates, f"event_{colname}"] = 1 
 
     return df 
 

@@ -46,17 +46,8 @@ MERGE_FEATURE_FILENAMES = {
 	# # Filename == keyname. Directory path == value. 
 
 	"economic_reported_data.csv": DIR_DATASET_ECONOMIC_REPORT, 
-	"fred__dataframes_bond_yield.csv": DIR_DATASET_ECONOMIC_DATA, 
-	"fred__dataframes_business.csv": DIR_DATASET_ECONOMIC_DATA, 
-	"fred__dataframes_employment.csv": DIR_DATASET_ECONOMIC_DATA, 
-	"fred__dataframes_gov_fiscal.csv": DIR_DATASET_ECONOMIC_DATA, 
-	"fred__dataframes_household.csv": DIR_DATASET_ECONOMIC_DATA, 
-	"fred__dataframes_housing.csv": DIR_DATASET_ECONOMIC_DATA, 
-	"fred__dataframes_manufacturer.csv": DIR_DATASET_ECONOMIC_DATA, 
-	"fred__dataframes_monetary.csv": DIR_DATASET_ECONOMIC_DATA, 
-	"fred__dataframes_price.csv": DIR_DATASET_ECONOMIC_DATA, 
+	"econometric_fred.csv": DIR_DATASET_ECONOMIC_REPORT, 
 	"quan__dataframes_manufacturer.csv": DIR_DATASET_ECONOMIC_DATA, 
-	"quan__dataframes_others.csv": DIR_DATASET_ECONOMIC_DATA, 
 	"ravenpack_sentiment_2010.csv": DIR_DATASET_SENTIMENT, 
 	"ravenpack_sentiment_2011.csv": DIR_DATASET_SENTIMENT, 
 	"ravenpack_sentiment_2012.csv": DIR_DATASET_SENTIMENT, 
@@ -439,29 +430,29 @@ FINANCIAL_COMPUTE_COMBINATION = {
 # Example: "new_feature_name": ["numerator", "denominator"] 
 FINANCIAL_COMPUTE_RATIO = {
 	# # From Jeremy Zhang Qi. 
-    "turnover_asset": ["totalRevenue", "totalAssets"],
-    "turnover_operatingCashFlow": ["operatingCashflow", "totalRevenue"],
-    "margin_grossProfit": ["grossProfit", "totalRevenue"],
-    "margin_netIncomeFromOperations": ["netIncomeFromContinuingOperations", "totalRevenue"],
+	"turnover_asset": ["totalRevenue", "totalAssets"],
+	"turnover_operatingCashFlow": ["operatingCashflow", "totalRevenue"],
+	"margin_grossProfit": ["grossProfit", "totalRevenue"],
+	"margin_netIncomeFromOperations": ["netIncomeFromContinuingOperations", "totalRevenue"],
 
 	# # Uncomment any of the following if you want to get them. 
 	# # Remember to change the variable names. 
 
-    "workingCapitalTurnover": ["workingCapital", "totalRevenue"],
-    "inventoryRatio": ["inventory", "totalRevenue"],
-    "capexRatio": ["capitalExpenditures", "totalRevenue"],
-    "researchAndDevelopmentRatio": ["researchAndDevelopment", "totalRevenue"],
-    "incomeNetPretaxPerRevenue": ["incomeBeforeTax", "totalRevenue"],
-    "currentRatio": ["totalCurrentAssets", "totalCurrentLiabilities"],
-    "quickRatio": ["assetsQuick", "totalCurrentLiabilities"],
-    "cashRatio": ["operatingCashflow", "totalCurrentLiabilities"],
-    "longTermDebtRatio": ["longTermDebtNoncurrent", "incomeBeforeTax"],
-    "cashFlowOperatingRatio": ["operatingCashflow", "totalCurrentLiabilities"],
-    "interestPayRatio": ["interestExpense", "grossProfit"],
-    "debtEquityRatio": ["totalLiabilities", "totalShareholderEquity"],
-    "shareholderEquityRatio": ["shareholderEquity", "totalAssets"],
-    "returnEquityRatio": ["ownerEarnings", "totalShareholderEquity"],
-    "cashFlowOperatingPerShare": ["operatingCashflow", "totalShareholderEquity"],
+	"workingCapitalTurnover": ["workingCapital", "totalRevenue"],
+	"inventoryRatio": ["inventory", "totalRevenue"],
+	"capexRatio": ["capitalExpenditures", "totalRevenue"],
+	"researchAndDevelopmentRatio": ["researchAndDevelopment", "totalRevenue"],
+	"incomeNetPretaxPerRevenue": ["incomeBeforeTax", "totalRevenue"],
+	"currentRatio": ["totalCurrentAssets", "totalCurrentLiabilities"],
+	"quickRatio": ["assetsQuick", "totalCurrentLiabilities"],
+	"cashRatio": ["operatingCashflow", "totalCurrentLiabilities"],
+	"longTermDebtRatio": ["longTermDebtNoncurrent", "incomeBeforeTax"],
+	"cashFlowOperatingRatio": ["operatingCashflow", "totalCurrentLiabilities"],
+	"interestPayRatio": ["interestExpense", "grossProfit"],
+	"debtEquityRatio": ["totalLiabilities", "totalShareholderEquity"],
+	"shareholderEquityRatio": ["shareholderEquity", "totalAssets"],
+	"returnEquityRatio": ["ownerEarnings", "totalShareholderEquity"],
+	"cashFlowOperatingPerShare": ["operatingCashflow", "totalShareholderEquity"],
 }
 
 # For evaluating and ranking corporate's fundamental quality. 
