@@ -16,6 +16,7 @@ polars = "*"
 pywavelets = "*"
 feature-engine = "*"
 scikit-learn = "*"
+arch = "*"
 umap-learn = {extras = ["plot"], version = "*"} 
 xgboost = "*"
 gensim = "*"
@@ -33,6 +34,7 @@ ta-lib = "*"
 alphalens-reloaded = "*"
 zipline-reloaded = "*"
 backtrader = "*"
+kats = "*"
 
 [requires]
 python_version = "3.8"
