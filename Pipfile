@@ -16,6 +16,8 @@ polars = "*"
 pywavelets = "*"
 feature-engine = "*"
 scikit-learn = "*"
+arch = "*"
+kats = "*"
 umap-learn = {extras = ["plot"], version = "*"} 
 xgboost = "*"
 gensim = "*"

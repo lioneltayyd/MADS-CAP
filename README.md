@@ -59,7 +59,9 @@ Notebook Name | Description
 
 1.  Next, run the following to activate the virtual environment. All your packages 
     will only made available within this environment. The `pipenv sync` is to ensure 
-    that pipenv should match the exact version when installing the packages. 
+    that pipenv should match the exact version when installing the packages. You 
+    only need to run the `pipenv sync` once. The `pipenv shell` is to activate the 
+    virtual environment. Need to run each time you begin working on the project. 
 
     ```bash
     pipenv sync && pipenv shell; 
@@ -77,8 +79,8 @@ Notebook Name | Description
 
 ## __Required Data Source Downloads__
 
-1.  A new directory called `dataset` should be created within the main project directory.
-2.  Download the datasets from [Google Drive](https://drive.google.com/drive/u/4/folders/1sgpZq_FNcWTuYZ-bU54LLtaGjtytRJlR) and put them in the `dataset` directory. 
+1.  Download the `dataset` folder from [Google Drive](https://drive.google.com/drive/u/4/folders/1sgpZq_FNcWTuYZ-bU54LLtaGjtytRJlR) 
+    and put them in the the main / root project directory. 
 
 ---
 
