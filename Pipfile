@@ -34,6 +34,7 @@ ta = "*"
 ta-lib = "*"
 alphalens-reloaded = "*"
 zipline-reloaded = "*"
+pyfolio-reloaded = "*"
 backtrader = "*"
 
 [requires]
