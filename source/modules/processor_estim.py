@@ -132,9 +132,19 @@ def multiverse_analysis(
             # component name to the function using dictionary to dynamically obtain 
             # the function for specific component instead of hard code them this way. 
             for component, chosen_features in components.items(): 
-                if component == "econometric": 
+                if component == "market_internal": 
+                    var_proc.extend(chosen_features) 
+                elif component == "valuation": 
+                    var_proc.extend(chosen_features) 
+                elif component == "eventflag": 
+                    var_proc.extend(chosen_features) 
+                elif component == "econometric": 
                     var_proc.extend(chosen_features) 
                 elif component == "rp_sentiment": 
+                    var_proc.extend(chosen_features) 
+                elif component == "techind": 
+                    var_proc.extend(chosen_features) 
+                elif component == "candlestick": 
                     var_proc.extend(chosen_features) 
 
             # Transform categorical variable into OHE if any. 

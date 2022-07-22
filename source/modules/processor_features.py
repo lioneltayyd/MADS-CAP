@@ -8,6 +8,7 @@ from source.modules.manage_files import ManageFiles
 from source.config_py.config import (
     MERGE_FEATURE_FILENAMES, MERGE_EVENT_FILENAMES, TICKER_DATE_COLLECT, 
     TICKER_TO_COLLECT, TICKER_TO_EXCLUDE, ECONOMIC_FRED_FEATURES, 
+    FINANCIAL_INCOME_STATES, 
 )
 
 
@@ -191,6 +192,7 @@ def merge_with_ticker(
     df:pd.DataFrame, 
     merge_with:pd.DataFrame, 
     merge_suffix:str="", 
+    merge_datecol:str="date", 
     merge_on:List[str]=["date"], 
     relation:str="many_to_one" 
 ) -> pd.DataFrame:
@@ -199,7 +201,7 @@ def merge_with_ticker(
     '''
 
     # Ensure the datetime is converted to str to be able to match dates. 
-    df["date"], merge_with["date"] = df["date"].astype(str), merge_with["date"].astype(str) 
+    df[merge_datecol], merge_with[merge_datecol] = df[merge_datecol].astype(str), merge_with[merge_datecol].astype(str) 
 
     # Rename columns. 
     merge_with.columns = [f"{merge_suffix}_{c}" for c in merge_with.columns] 
@@ -214,3 +216,73 @@ def merge_with_ticker(
     # df_merged["date"] = pd.to_datetime(df_merged["date"], infer_datetime_format=True) 
 
     return df_merged 
+
+
+
+# %% 
+def rolling_sum_bygroup(
+    df:pd.DataFrame, 
+    groupby:List[str]=["ticker"], 
+    window:int=4, 
+    usecols:List[str]=FINANCIAL_INCOME_STATES, 
+) -> pd.DataFrame: 
+    '''Compute the rolling value for quarterly income statement.'''
+
+    # Make a copy to avoid (SettingWarnings). 
+    df_rollsum = df.copy() 
+
+    # Process column names. 
+    getcols = groupby + usecols 
+
+    # Compute the rolling value. 
+    df_rollsum[usecols] = df_rollsum \
+        .loc[:, getcols] \
+        .groupby(groupby, as_index=False, sort=False) \
+        .rolling(window=window, min_periods=window) \
+        .sum() \
+        .loc[:, usecols] 
+
+    return df_rollsum 
+
+
+
+# %% 
+def process_quarter_date(
+    df:pd.DataFrame, 
+    datecol:str, 
+    shift_qrt:int=2
+) -> pd.DataFrame: 
+    '''
+    Process date interval so that the datasets can be merged on 
+    date related column later.
+    '''
+
+    # Copy the dataframe to avoid (SettingWarnings). 
+    df_data = df.copy() 
+
+    # Shift the quarter end date forward by 1 quarter. 
+    df_data[datecol] = pd.to_datetime(df_data[datecol]) 
+    df_data["date_quarter"] = df_data[datecol] - pd.DateOffset(days=1) + pd.tseries.offsets.QuarterEnd(shift_qrt) 
+
+    # Remove tickers that contain inconsistent quarterly reporting date. 
+    boo_dup = df_data.duplicated(subset=["ticker", "date_quarter"], keep=False) 
+    dup_tic = df_data.loc[boo_dup, "ticker"].unique() 
+    df_data = df_data[~df_data["ticker"].isin(dup_tic)] 
+
+    return df_data 
+
+
+
+# %% 
+def compute_price_to_ratio(df:pd.DataFrame, compute_cols:Dict[str,Tuple]) -> pd.DataFrame: 
+    '''Compute the price-to ratio.'''
+
+    # Copy the dataframe to avoid (SettingWarnings). 
+    df_data = df.copy() 
+
+    # Compute the ratio. 
+    for newcol, computecols in compute_cols.items(): 
+        numcol, dencol = tuple(computecols) 
+        df_data[newcol] = df_data[numcol] / df_data[dencol] 
+
+    return df_data 

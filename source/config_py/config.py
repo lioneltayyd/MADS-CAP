@@ -106,9 +106,12 @@ TICKER_TO_COLLECT = set([
 	"MRK", "JNJ", 
 ]) 
 
-# Define ticker to exclude from S&P. Exclude them because of API error. 
+# Define ticker to exclude from S&P. Exclude them because of specific error. 
 TICKER_TO_EXCLUDE = set([
+	# # Can't get the technical indicator data for this ticker. 
 	"ANTM", 
+	# # Inconsistent quarterly reporting date. 
+	"AAP", "NLOK", "PKI", "CI", "MPWR", 
 ])
 
 # -------------------------------------------------------
@@ -355,11 +358,11 @@ CANDLESTICK_FEATURES = [
 # Define financial statement data  
 # -------------------------------------------------------
 
-FINANCIAL_KEEP_FEATURES = [
-	# # General. 
-	"ticker", 
-	"fiscalDateEnding", 
-	# # Income statement. 
+# # Comment or uncomment any of the following if you need or
+# # don't need it. Or you can add unavailable feature to the list. 
+# # The feature you add must be a valid feature. 
+
+FINANCIAL_INCOME_STATES = [
 	"totalRevenue",
 	"researchAndDevelopment",
 	"capitalExpenditures",
@@ -370,7 +373,8 @@ FINANCIAL_KEEP_FEATURES = [
 	"incomeBeforeTax",
 	"netIncomeFromContinuingOperations",
 	"netIncome_x",
-	# # Balance sheet. 
+]
+FINANCIAL_BALANCE_SHEET = [
 	"inventory",
 	"totalAssets",
 	"totalCurrentAssets", 
@@ -378,13 +382,16 @@ FINANCIAL_KEEP_FEATURES = [
 	"totalLiabilities", 
 	"longTermDebtNoncurrent", 
 	"totalShareholderEquity", 
-	# # Cash flow. 
+	"commonStockSharesOutstanding", 
+]
+FINANCIAL_CASHFLOW = [
 	"operatingCashflow",
+]
 
-	# # Uncomment any of the following if you need it. 
-	# # Or you can add unavailable feature to the list. 
-	# # The feature you add must be a valid feature. 
-] 
+FINANCIAL_KEEP_FEATURES = ["ticker", "fiscalDateEnding"] \
+	+ FINANCIAL_INCOME_STATES \
+	+ FINANCIAL_BALANCE_SHEET \
+	+ FINANCIAL_CASHFLOW
 
 # For computing change or growth rate. 
 # Example: "new_feature_name": "feature_name" 
@@ -420,39 +427,38 @@ FINANCIAL_COMPUTE_COMBINATION = {
         "add": ["totalCurrentAssets"], 
         "sub": ["totalCurrentLiabilities"],
     },
-    "shareholderEquity": {
-        "add": ["totalAssets", "totalShareholderEquity"], 
-        "sub": ["totalLiabilities"],
-    }
 }
 
 # For computing ratio. 
 # Example: "new_feature_name": ["numerator", "denominator"] 
 FINANCIAL_COMPUTE_RATIO = {
 	# # From Jeremy Zhang Qi. 
-	"turnover_asset": ["totalRevenue", "totalAssets"],
-	"turnover_operatingCashFlow": ["operatingCashflow", "totalRevenue"],
-	"margin_grossProfit": ["grossProfit", "totalRevenue"],
-	"margin_netIncomeFromOperations": ["netIncomeFromContinuingOperations", "totalRevenue"],
+	"turnover_asset": ("totalRevenue", "totalAssets"),
+	"turnover_operatingCashFlow": ("operatingCashflow", "totalRevenue"),
+	"margin_grossProfit": ("grossProfit", "totalRevenue"),
+	"margin_netIncomeFromOperations": ("netIncomeFromContinuingOperations", "totalRevenue"),
+	"eps": ("netIncome_x", "commonStockSharesOutstanding"),
+	"eps_continuing": ("netIncomeFromContinuingOperations", "commonStockSharesOutstanding"),
+	"rps": ("totalRevenue", "commonStockSharesOutstanding"),
 
 	# # Uncomment any of the following if you want to get them. 
 	# # Remember to change the variable names. 
 
-	"workingCapitalTurnover": ["workingCapital", "totalRevenue"],
-	"inventoryRatio": ["inventory", "totalRevenue"],
-	"capexRatio": ["capitalExpenditures", "totalRevenue"],
-	"researchAndDevelopmentRatio": ["researchAndDevelopment", "totalRevenue"],
-	"incomeNetPretaxPerRevenue": ["incomeBeforeTax", "totalRevenue"],
-	"currentRatio": ["totalCurrentAssets", "totalCurrentLiabilities"],
-	"quickRatio": ["assetsQuick", "totalCurrentLiabilities"],
-	"cashRatio": ["operatingCashflow", "totalCurrentLiabilities"],
-	"longTermDebtRatio": ["longTermDebtNoncurrent", "incomeBeforeTax"],
-	"cashFlowOperatingRatio": ["operatingCashflow", "totalCurrentLiabilities"],
-	"interestPayRatio": ["interestExpense", "grossProfit"],
-	"debtEquityRatio": ["totalLiabilities", "totalShareholderEquity"],
-	"shareholderEquityRatio": ["shareholderEquity", "totalAssets"],
-	"returnEquityRatio": ["ownerEarnings", "totalShareholderEquity"],
-	"cashFlowOperatingPerShare": ["operatingCashflow", "totalShareholderEquity"],
+	# "workingCapitalTurnover": ("workingCapital", "totalRevenue"),
+	# "inventoryRatio": ("inventory", "totalRevenue"),
+	# "capexRatio": ("capitalExpenditures", "totalRevenue"),
+	# "researchAndDevelopmentRatio": ("researchAndDevelopment", "totalRevenue"),
+	# "incomeNetPretaxPerRevenue": ("incomeBeforeTax", "totalRevenue"),
+	# "currentRatio": ("totalCurrentAssets", "totalCurrentLiabilities"),
+	# "quickRatio": ("assetsQuick", "totalCurrentLiabilities"),
+	# "cashRatio": ("operatingCashflow", "totalCurrentLiabilities"),
+	# "longTermDebtRatio": ("longTermDebtNoncurrent", "incomeBeforeTax"),
+	# "cashFlowOperatingRatio": ("operatingCashflow", "totalCurrentLiabilities"),
+	# "interestPayRatio": ("interestExpense", "grossProfit"),
+	# "debtEquityRatio": ("totalLiabilities", "totalShareholderEquity"),
+	# "shareholderEquityRatio": ("shareholderEquity", "totalAssets"),
+	# "returnEquityRatio": ("ownerEarnings", "totalShareholderEquity"),
+	# "cashFlowOperatingPerShare": ("operatingCashflow", "totalShareholderEquity"),
 }
 
 # For evaluating and ranking corporate's fundamental quality. 
@@ -565,8 +571,16 @@ EXPERIMENT_COMPS = [
 	},
 
 	# # Add your list of components below. 
-
 	# {
+	# 	"market_internal": [
+			
+	# 	], 
+	# 	"valuation": [
+
+	# 	], 
+	# 	"eventflag": [
+
+	# 	], 
 	# 	"econometric": [
 	# 		"econ_bond_yield_10yr",
 	# 		"econ_bond_yield_10yr_minus_2yr",
@@ -587,7 +601,13 @@ EXPERIMENT_COMPS = [
 	# 		"rp_ess",
 	# 		"rp_aes",
 	# 		"rp_css",
-	# 	] 
+	# 	], 
+	# 	"techind": [
+
+	# 	], 
+	# 	"candlestick": [
+
+	# 	], 
 	# },
 ]
 

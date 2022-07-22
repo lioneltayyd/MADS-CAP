@@ -31,10 +31,10 @@ alpha-vantage = "*"
 wrds = "*"
 fredapi = "*"
 ta = "*"
-ta-lib = "*"
-alphalens-reloaded = "*"
+ta-lib = "==0.4.19"
+alphalens-reloaded = "==0.4.2"
 zipline-reloaded = "*"
-pyfolio-reloaded = "*"
+pyfolio-reloaded = "==0.9.4"
 backtrader = "*"
 
 [requires]

@@ -36,8 +36,8 @@ def compute_forward_return(
     returns_lags:List[str]=[1,5,10,21,126,252], 
     trim_out:float=0.0001, 
     window:int=252, 
-    volt_range:Tuple[int]=(.25, 1.0), 
-    autocorr_lags:List[str]=[], 
+    autocorr_lags:List[str]=[1,2,3], 
+    volt_range:Tuple[int]=(.25, 1.0) 
 ) -> pd.DataFrame: 
     '''
     Compute the forward price return (logret), volatility class (volt), mean reversion (tscore). 
@@ -81,7 +81,7 @@ def compute_forward_return(
 
                 retname = f"{keyname}_lag{lag}" 
                 tscname = f"tscore_{return_cat}_lag{lag}" 
-                volname = f"volt_{return_cat}_lag{lag}" 
+                vltname = f"volt_{return_cat}_lag{lag}" 
 
                 # Compute the ticker price return. 
                 df[retname] = df \
@@ -105,16 +105,18 @@ def compute_forward_return(
                     .reset_index(drop=True) 
                 df[tscname] = (df[retname] - ret_ravg) / ret_rstd 
                 
-                # # Comment this out. Might not needed. 
+                # # NOTICE: Considering... Might not needed. 
                 # # Define the volatility or price movement scale or class. 
-                # df[volname] = 1 
-                # df.loc[df[tscname].abs() >= volt_hi, volname] = 2 
-                # df.loc[df[tscname].abs() <= volt_lo, volname] = 0 
+                # df[vltname] = 1 
+                # df.loc[df[tscname].abs() >= volt_hi, vltname] = 2 
+                # df.loc[df[tscname].abs() <= volt_lo, vltname] = 0 
 
                 # Create autocorrsselated features for the past N days. 
                 for autolag in autocorr_lags: 
-                    df[f"{retname}_autolag{autolag}"] = df.groupby(["ticker"])[retname].shift(lag) 
-                    df[f"{tscname}_autolag{autolag}"] = df.groupby(["ticker"])[tscname].shift(lag) 
-                    df[f"{volname}_autolag{autolag}"] = df.groupby(["ticker"])[volname].shift(lag) 
+                    df[f"{retname}_autolag{autolag}"] = df.groupby(["ticker"])[retname].shift(autolag) 
+                    df[f"{tscname}_autolag{autolag}"] = df.groupby(["ticker"])[tscname].shift(autolag) 
+
+                    # # NOTICE: Considering... Might not needed. 
+                    # df[f"{vltname}_autolag{autolag}"] = df.groupby(["ticker"])[vltname].shift(autolag) 
 
     return df 
