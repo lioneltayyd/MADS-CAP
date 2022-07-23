@@ -8,9 +8,9 @@ from alpha_vantage.fundamentaldata import FundamentalData
 
 # Custom configs. 
 from source.config_py.config import (
-    FINANCIAL_KEEP_FEATURES, FINANCIAL_COMPUTE_CHANGE, 
-    FINANCIAL_COMPUTE_COMBINATION, FINANCIAL_COMPUTE_RATIO, 
-    FINANCIAL_EVAL_QUALITY, 
+    FINANCIAL_KEEP_FEATURES, 
+    FINANCIAL_COMPUTE_CHANGE, FINANCIAL_COMPUTE_COMBINATION, 
+    FINANCIAL_COMPUTE_RATIO, FINANCIAL_EVAL_QUALITY, 
 )
 
 
@@ -60,7 +60,7 @@ def get_corporate_overview_alphav(ticker:str) -> pd.DataFrame:
 
 
 # %%
-def get_fundamental_alphav(ticker:str) -> pd.DataFrame: 
+def get_fundamental_alphav(ticker:str, annual:bool=True) -> pd.DataFrame: 
     '''
     Get fundamental data from Alpha Vantage. 
 
@@ -70,24 +70,31 @@ def get_fundamental_alphav(ticker:str) -> pd.DataFrame:
         Caution: facebook's ticker is META, not FB, but in wikipedia still use FB. 
     '''
     
-    print(f"Getting fundamental data from (Alpha Vantage) for ({ticker}).") 
+    frequency = "annually" if annual else "quarterly" 
+    print(f"Getting fundamental ({frequency}) data from (Alpha Vantage) for ({ticker}).") 
     
     df_report_compiled = pd.DataFrame()
 
     # Get the financial statement. 
-    dict_report = {
-        "is_state": datasource.get_income_statement_annual(ticker)[0], 
-        "bs_state": datasource.get_balance_sheet_annual(ticker)[0], 
-        "cf_state": datasource.get_cash_flow_annual(ticker)[0], 
-    }
+    if annual: 
+        dict_report = {
+            "is_state": datasource.get_income_statement_annual(ticker)[0], 
+            "bs_state": datasource.get_balance_sheet_annual(ticker)[0], 
+            "cf_state": datasource.get_cash_flow_annual(ticker)[0], 
+        }
+    else: 
+        # Get the financial statement. 
+        dict_report = {
+            "is_state": datasource.get_income_statement_quarterly(ticker)[0], 
+            "bs_state": datasource.get_balance_sheet_quarterly(ticker)[0], 
+            "cf_state": datasource.get_cash_flow_quarterly(ticker)[0], 
+        }
 
     # Merge the financial statements. 
     getcol = ["fiscalDateEnding", "reportedCurrency"] 
     for i, df_report in enumerate(dict_report.values()): 
         None if i == 0 else df_report.drop(columns=getcol, inplace=True) 
-        df_report_compiled = df_report_compiled.merge(
-            right=df_report, how="outer", left_index=True, right_index=True
-        ) 
+        df_report_compiled = df_report_compiled.merge(right=df_report, how="outer", left_index=True, right_index=True) 
 
     # Replace all (None) string to (np.NaN) object and convert numeric columns to numeric dtype. 
     getcol = df_report_compiled.columns.difference(getcol) 
@@ -98,6 +105,12 @@ def get_fundamental_alphav(ticker:str) -> pd.DataFrame:
 
     # Rearrange columns. 
     df_report_compiled = df_report_compiled.loc[:, ["ticker"] + df_report_compiled.columns[:-1].to_list()] 
+
+    # Sort the by report date. 
+    df_report_compiled.sort_values(by="fiscalDateEnding", ascending=True, inplace=True) 
+
+    # Drop rows with empty date. 
+    df_report_compiled.dropna(axis="index", subset=["fiscalDateEnding"], inplace=True) 
 
     return df_report_compiled 
 
@@ -119,7 +132,7 @@ def compute_extra_fundamental(
 
     # Compute change or growth rate. 
     for outcol, computecol in compute_change.items(): 
-        df_proc[outcol] = df_proc.groupby("ticker")[computecol].pct_change(periods=-1) 
+        df_proc[outcol] = df_proc.groupby("ticker")[computecol].pct_change(periods=1) 
 
     # Compute arithmetic. 
     for outcol, dict_compute in compute_combination.items(): 
