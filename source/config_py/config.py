@@ -112,6 +112,8 @@ TICKER_TO_EXCLUDE = set([
 	"ANTM", 
 	# # Inconsistent quarterly reporting date. 
 	"AAP", "NLOK", "PKI", "CI", "MPWR", 
+	# # Download issue. 
+	"DD", "LIN", "VICI", 
 ])
 
 # -------------------------------------------------------
@@ -272,18 +274,43 @@ TECHNIND_FEATURES = {
 		slowperiod=26, 
 		signalperiod=9, 
 	), 
-	"stoch": dict(
+	"ema_t20": dict(
 		interval="daily", 
-		fastkperiod=5, 
-		slowkperiod=3, 
-		slowdperiod=0, 
-		slowkmatype=3, 
-		slowdmatype=0, 
-	)
+		time_period=20, 
+		series_type="close", 
+	), 
+	"ema_t50": dict(
+		interval="daily", 
+		time_period=50, 
+		series_type="close", 
+	), 
+	"ema_t200": dict(
+		interval="daily", 
+		time_period=200, 
+		series_type="close", 
+	), 
+	"rsi_t20": dict(
+		interval="daily", 
+		time_period=20, 
+		series_type="close", 
+	), 
+	"rsi_t50": dict(
+		interval="daily", 
+		time_period=50, 
+		series_type="close", 
+	), 
+	# "stoch": dict(
+	# 	interval="daily", 
+	# 	fastkperiod=5, 
+	# 	slowkperiod=3, 
+	# 	slowdperiod=0, 
+	# 	slowkmatype=3, 
+	# 	slowdmatype=0, 
+	# )
 }
 
 # -------------------------------------------------------
-# Define candlesticks   
+# Define candlesticks 
 # -------------------------------------------------------
 
 # Uncomment the any of the feature below if you want to use it. 

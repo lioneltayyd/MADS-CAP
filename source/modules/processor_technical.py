@@ -1,5 +1,5 @@
 # Python module. 
-import os, talib 
+import os, re, talib 
 import pandas as pd 
 from alpha_vantage.techindicators import TechIndicators 
 from typing import Tuple, List, Dict 
@@ -38,7 +38,10 @@ def get_techind_alphav(
     df_techind_compiled = pd.DataFrame(index=pd.date_range(daterange[0], daterange[1], freq="D")) 
 
     # Get the technical indicator. 
-    dict_techind = {f: f'''datasource.get_{f}("{ticker}", **{p})[0]''' for f, p in features.items()} 
+    dict_techind = dict() 
+    for f, p in features.items(): 
+        func = re.sub(r"_t\d+$", "", f) 
+        dict_techind[f] = f'''datasource.get_{func}("{ticker}", **{p})[0]''' 
 
     # Concat the technical indicators. 
     for techname, tech_ind in dict_techind.items(): 

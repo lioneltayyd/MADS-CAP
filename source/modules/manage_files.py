@@ -53,7 +53,7 @@ class ManageFiles():
 		return df 
 
 
-	def save_cache_pk(self, object=None, dirpath:str=None, filename:str=None): 
+	def save_cache_pk(self, dirpath:str=None, filename:str=None, object=None): 
 		'''Cache the result.''' 
 
 		print(f"Save to ({filename})") 
