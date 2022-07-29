@@ -40,7 +40,7 @@ class SignalData(PandasData):
 	"""
     
 	ohlvc = ["open", "high", "low", "close", "volume"]
-	fcols = ohlvc + ["signal"]
+	fcols = ohlvc + ["estimated"] + ["signal"]
 
 	# All parameters related to lines must have numeric values as indices into the tuples. 
 	lines = tuple(fcols)
@@ -110,6 +110,7 @@ class MLStrategy(ConfigStrategy):
     params = (
         ("n_positions", 10),
         ("min_positions", 5),
+        ("include_short", True),
         ("verbose", False),
         ("log_file", "backtest.csv"),
     )
@@ -117,28 +118,23 @@ class MLStrategy(ConfigStrategy):
     def next(self):
         """Execute the strategy. Take or close the position at each iteration."""
 
-        today = self.datas[0].datetime.date() 
+        today = self.datas[0].datetime.date()
 
-        # # Only trade on Mondays. 
-        # if today.weekday() not in [0, 3]: 
-        #     return 
-
-        up, down = {}, {}
-        missing = not_missing = 0
+        rise, fall = dict(), dict()
 
         for data in self.datas:
-            # Assign the predicted value to the (predicted) column for each date. 
-            # Key = ticker name. Value = predicted forward return. 
+            # Assign the estimated value to the (estimated) column for each date. 
+            # Key = ticker name. Value = estimated forward return. 
             if data.datetime.date() == today:
-                if data.predicted[0] > 0:
-                    up[data._name] = data.predicted[0]
-                elif data.predicted[0] < 0:
-                    down[data._name] = data.predicted[0]
+                if data.signal[0] == 1:
+                    rise[data._name] = data.estimated[0]
+                elif data.signal[0] == -1 and self.p.include_short:
+                    fall[data._name] = data.estimated[0]
 
         # Sort dictionaries ascending/descending by valu. Returns list of tuples. 
         # Get the top N tickers for the highest return (long) and lowest return (short). 
-        ls_short = sorted(down, key=down.get)[:self.p.n_positions]
-        ls_longs = sorted(up, key=up.get, reverse=True)[:self.p.n_positions]
+        ls_short = sorted(fall, key=fall.get)[:self.p.n_positions]
+        ls_longs = sorted(rise, key=rise.get, reverse=True)[:self.p.n_positions]
         n_short, n_longs = len(ls_short), len(ls_longs)
         
         # Only take positions if at least min N longs and short. 
@@ -156,16 +152,16 @@ class MLStrategy(ConfigStrategy):
         # divided equally among the N position or short / long. Short "borrows cash" so 
         # you have another X % of "borrowed money" for short here. 
         short_target = -1 / max(self.p.n_positions, n_short)
-        longs_target = 1 / max(self.p.n_positions, n_longs)
+        longs_target =  1 / max(self.p.n_positions, n_longs)
 
         # Take or exit the position. If (data:=str) it will automatically get the ticker data. 
         # The target percent here indicates the percentage of porfolio to invest into. 
         for ticker in ls_short:
             self.order_target_percent(data=ticker, target=short_target)
-            self.log("{ticker}, SHORT ORDER CREATED")
+            self.log(f"{ticker}, SHORT ORDER CREATED")
         for ticker in ls_longs:
             self.order_target_percent(data=ticker, target=longs_target)
-            self.log("{ticker}, LONG ORDER CREATED")
+            self.log(f"{ticker}, LONG ORDER CREATED")
 
 
 
@@ -179,6 +175,7 @@ class RuleBasedStrategy(ConfigStrategy):
     params = (
         ("n_positions", 10),
         ("min_positions", 5),
+        ("include_short", True),
         ("verbose", False),
         ("log_file", "backtest.csv"),
     )
@@ -192,10 +189,11 @@ class RuleBasedStrategy(ConfigStrategy):
 
         for data in self.datas:
             # If the signal is detected, append to the list for ordering later. 
+            # Will only include shorting if the user wants it. 
             if data.datetime.date() == today:
                 if data.signal[0] == 1:
                     ls_longs.add(data._name)
-                elif data.signal[0] == -1:
+                elif data.signal[0] == -1 and self.p.include_short:
                     ls_short.add(data._name)
                     
         n_short, n_longs = len(ls_short), len(ls_longs)
@@ -215,13 +213,13 @@ class RuleBasedStrategy(ConfigStrategy):
         # divided equally among the N position or short / long. Short "borrows cash" so 
         # you have another X % of "borrowed money" for short here. 
         short_target = -1 / max(self.p.n_positions, n_short)
-        longs_target = 1 / max(self.p.n_positions, n_longs)
+        longs_target =  1 / max(self.p.n_positions, n_longs)
 
         # Take or exit the position. If (data:=str) it will automatically get the ticker data. 
         # The target percent here indicates the percentage of porfolio to invest into. 
         for ticker in ls_short:
             self.order_target_percent(data=ticker, target=short_target)
-            self.log("{ticker}, SHORT ORDER CREATED")
+            self.log(f"{ticker}, SHORT ORDER CREATED")
         for ticker in ls_longs:
             self.order_target_percent(data=ticker, target=longs_target)
-            self.log("{ticker}, LONG ORDER CREATED")
+            self.log(f"{ticker}, LONG ORDER CREATED")

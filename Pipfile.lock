@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "08790a2a26d42bec07c9ae06b66dfb286c123c6e17bc87c8eccee7145da5c5c8"
+            "sha256": "1b1bb7f6992000e040b47c0cf20464cf852f0c42c59049d842f46f8fd7e7e63c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -460,7 +460,7 @@
                 "sha256:501bdd2fc3f7bce7a42f4cb85a7883e831d45ce1c2be2465e5e687f9e9d35d74",
                 "sha256:a3972489c46456e54070fe140a2178e002c2e96912ed9ef85c3896b74f469194"
             ],
-            "markers": "python_version >= '3.8'",
+            "markers": "python_full_version >= '3.8.0'",
             "version": "==2022.7.1"
         },
         "datashader": {
@@ -925,7 +925,7 @@
                 "sha256:7ca74052a38fa25fe9bedf52da0be7d3fdd2fb027c3b778ea78dfe8c212937d1",
                 "sha256:f2db3a10254241d9b447232cec8b424847f338d9d36f9a577a6192c332a46abd"
             ],
-            "markers": "python_version >= '3.8'",
+            "markers": "python_full_version >= '3.8.0'",
             "version": "==8.4.0"
         },
         "iso3166": {
@@ -1518,7 +1518,7 @@
                 "sha256:15a7b81a360791c458c55a417418ea136c13378cfdc06a2dcdc12bd2f9cf09c1",
                 "sha256:a762f4b385692d9c3a6f2912d058d76d29a827deaedf9e63ed14d397b8030687"
             ],
-            "markers": "python_version >= '3.8'",
+            "markers": "python_full_version >= '3.8.0'",
             "version": "==2.8.5"
         },
         "numba": {
@@ -1825,17 +1825,6 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==1.0.0"
-        },
-        "polars": {
-            "hashes": [
-                "sha256:45addbae17817b57d044053d9238eb01abcf838b99b938dfe1ec87266d35ffd2",
-                "sha256:6439d6f899faaf9f5426ae50337ccfd688de31ccaeee721a2e3ee60626882144",
-                "sha256:7e7472a26b22b5742f3dcef8a0de5ca9370099c1669cf2f041779b9b60fe01d0",
-                "sha256:e980201a53d89abd342950b713e3d7fa2710d519ac6a42a8f792b716b30475ba",
-                "sha256:ea5bb3980bcc0a28275a65431590c7fd8c14529fc50cc71ff3e37ff096e6dfe0"
-            ],
-            "index": "pypi",
-            "version": "==0.13.56"
         },
         "prettytable": {
             "hashes": [
@@ -2146,11 +2135,11 @@
         },
         "pytest-mpl": {
             "hashes": [
-                "sha256:0133a8d9a081b1317d90bc51e24184f1b24bbc06dc4e69c43f01c5f221dd9e50",
-                "sha256:4d3a9a81f075e45100c64f955ac11f6842d3f81e93c34c2d5c58b7c03da40ffd"
+                "sha256:2d571681124e8ff5f4e2b9c0d047d37d0499d6b6d8f2f49a1b50cdd993104469",
+                "sha256:a830e6bcd218b7cdf968034095855527d8191da00c37770138eb72b9534aa228"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==0.16.0"
+            "version": "==0.16.1"
         },
         "python-dateutil": {
             "hashes": [
@@ -2656,7 +2645,7 @@
                 "sha256:87e4d27fe96d0d7e4fc24f0cbe3463baae4ec51e81d95fbe60d2474636e0c7d8",
                 "sha256:f82cc99a1ff552310d19c379827c2c64dd9f85a38bcd5559db2470161867b786"
             ],
-            "markers": "python_version >= '3.8'",
+            "markers": "python_full_version >= '3.8.0'",
             "version": "==4.0.0"
         },
         "ta": {
@@ -2734,7 +2723,7 @@
                 "sha256:52b4c02040d00c1811e26c0f6abd41e77e2d57559b3657ff3e873955f74f5c57",
                 "sha256:b03147a15862b7c1d90d47435197f149bef7a52c25ad67cf1f9b465faa71b8d2"
             ],
-            "markers": "python_version >= '3.8'",
+            "markers": "python_full_version >= '3.8.0'",
             "version": "==2022.5.4"
         },
         "tomli": {
@@ -2861,7 +2850,7 @@
                 "sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02",
                 "sha256:e6d2677a32f47fc7eb2795db1dd15c1f34eff616bcaf2cfb5e997f854fa1c4a6"
             ],
-            "markers": "python_version < '3.10'",
+            "markers": "python_version >= '3.7'",
             "version": "==4.3.0"
         },
         "umap-learn": {
@@ -2979,7 +2968,7 @@
                 "sha256:1028d198493f66bb15bd35dcfdd11defd831cbee3af6589fff16f41bddd67e84",
                 "sha256:c052208afc3f261984049f28b962d64eb6741a7967898315642f5da85448b6b0"
             ],
-            "markers": "python_version >= '3.8'",
+            "markers": "python_full_version >= '3.8.0'",
             "version": "==2022.6.0"
         },
         "xgboost": {

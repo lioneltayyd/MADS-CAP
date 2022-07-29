@@ -5,13 +5,13 @@ verify_ssl = true
 
 [packages]
 ipykernel = "*"
+iso3166 = "==2.0.2"
 pyarrow = "*"
 regex = "*"
 numpy = "*"
 scipy = "*"
 xlrd = "*"
 pandas = "*"
-polars = "*"
 pywavelets = "*"
 feature-engine = "*"
 scikit-learn = "*"
@@ -35,7 +35,6 @@ alphalens-reloaded = "==0.4.2"
 zipline-reloaded = "*"
 pyfolio-reloaded = "==0.9.4"
 backtrader = {extras = ["plotting"], version = "*"}
-iso3166 = "==2.0.2"
 
 [requires]
 python_version = "3.8"

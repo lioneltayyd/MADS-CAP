@@ -3,8 +3,8 @@
 import re, scipy, optuna 
 import numpy as np 
 import pandas as pd 
-from typing import List, Dict, Any
-import xgboost as xgb
+from typing import List, Dict, Any, Union 
+import xgboost as xgb 
 from sklearn.linear_model import ElasticNet 
 from sklearn.base import BaseEstimator, TransformerMixin 
 from sklearn.utils.validation import check_is_fitted 
@@ -17,7 +17,7 @@ from feature_engine.variable_manipulation import _check_input_parameter_variable
 from IPython.display import clear_output 
 
 # Custom configs. 
-from source.config_py.config import PARAM_SEED, EXPERIMENT_COMPS, EXPERIMENT_MODEL 
+from source.config_py.config import PARAM_SEED, EXPERIMENT_COMPS, EXPERIMENT_MODEL_RG 
 
 
 
@@ -56,7 +56,7 @@ def search_opt(
     X, 
     y, 
     param_dist:dict, 
-    cv:List,
+    cv:Union[List,int],
     bayes:bool=True, 
     n_trials:int=50, 
     scoring:str="neg_root_mean_squared_error", 
@@ -99,21 +99,22 @@ def search_opt(
 
 
 
-# %% 
+# %%
 def multiverse_analysis(
     X:pd.DataFrame, 
     y:pd.DataFrame,
-    cv:List,
-    experiment_model:Dict[str,Any]=EXPERIMENT_MODEL,
+    cv:Union[List,int],
+    experiment_model:Dict[str,Any]=EXPERIMENT_MODEL_RG,
     experiment_comps:Dict[str,Any]=EXPERIMENT_COMPS,
     n_trials:int=50, 
+    scoring:str="neg_root_mean_squared_error", 
     verbose:int=2
 ) -> pd.DataFrame: 
     '''
     To perform multiverse analysis for various combination of components and models. 
     '''
 
-    colnames = ["est_names", "estimator", "component", "rmse_avg", "rmse_std"]
+    colnames = ["est_names", "estimator", "component", "score_avg", "score_std"]
 
     # To track the model performance for each combination of features and models. 
     df_performances = pd.DataFrame(columns=colnames) 
@@ -132,7 +133,11 @@ def multiverse_analysis(
             # component name to the function using dictionary to dynamically obtain 
             # the function for specific component instead of hard code them this way. 
             for component, chosen_features in components.items(): 
-                if component == "market_internal": 
+                if component == "estiamted": 
+                    var_proc.extend(chosen_features) 
+                elif component == "autocorr": 
+                    var_proc.extend(chosen_features) 
+                elif component == "market_internal": 
                     var_proc.extend(chosen_features) 
                 elif component == "valuation": 
                     var_proc.extend(chosen_features) 
@@ -158,7 +163,8 @@ def multiverse_analysis(
             # Hyperparameter optimisation. 
             model, param = eval(dict_mlparam["model"]), eval(dict_mlparam["param_dist"]) 
             searchres = search_opt(
-                model, X_trans, y, param, cv, dict_mlparam["bayes_opt"], n_trials, verbose=verbose
+                model, X_trans, y, param, cv, dict_mlparam["bayes_opt"], 
+                n_trials, scoring=scoring, verbose=verbose
             ) 
 
             # Track the performance for various combination of components and model choice. 
@@ -168,12 +174,13 @@ def multiverse_analysis(
             df_searchres["component"] = [str(components)] 
             df_searchres["ml_n_comp"] = [mlname + " + " + str(components)] 
             df_searchres["feat_name"] = [var_proc] 
+            df_searchres["scoring"] = [scoring] 
             if dict_mlparam["bayes_opt"]: 
-                df_searchres["rmse_avg"] = [searchres.study_.best_trial.user_attrs["mean_test_score"]] 
-                df_searchres["rmse_std"] = [searchres.study_.best_trial.user_attrs["std_test_score"]] 
+                df_searchres["score_avg"] = [searchres.study_.best_trial.user_attrs["mean_test_score"]] 
+                df_searchres["score_std"] = [searchres.study_.best_trial.user_attrs["std_test_score"]] 
             else: 
-                df_searchres["rmse_avg"] = [searchres.cv_results_["mean_test_score"][searchres.best_index_]] 
-                df_searchres["rmse_std"] = [searchres.cv_results_["std_test_score"][searchres.best_index_]] 
+                df_searchres["score_avg"] = [searchres.cv_results_["mean_test_score"][searchres.best_index_]] 
+                df_searchres["score_std"] = [searchres.cv_results_["std_test_score"][searchres.best_index_]] 
 
             # Consolidate the performance result. 
             df_performances = pd.concat([df_performances, df_searchres], axis="index") 
