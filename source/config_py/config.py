@@ -130,15 +130,7 @@ RECESSION_PERIOD = [
 	("Covid 2019", "2020-02-01", "2020-04-01"),
 	("DebtCrisis 2008", "2007-11-01", "2009-06-01"),
 	("DotCom 2001", "2001-03-01", "2001-11-01"),
-	("R 1990", "1990-07-01", "1991-03-01"),
-	("R 1982", "1981-11-01", "1982-07-01"),
-	("R 1980", "1980-01-01", "1980-07-01"),
-	("R 1974", "1973-11-01", "1975-03-01"),
-	("R 1970", "1969-12-01", "1970-11-01"),
-	("R 1960", "1960-04-01", "1961-02-01"),
-	("R 1957", "1957-08-01", "1958-04-01"),
-	("R 1953", "1953-07-01", "1954-05-01"),
-	("R 1949", "1948-11-01", "1949-10-01"),
+	("Early Recession", "1990-07-01", "1991-03-01"),
 ]
 
 # Yield curve inversion period (10Y over 3M Treasury Yield). 
@@ -579,28 +571,22 @@ PARAM_LANG = "en"
 
 EXPERIMENT_COMPS = [ 
 	{
-		"econometric": [
-			"econ_bond_yield_10yr",
-			"econ_bond_yield_10yr_minus_2yr",
-			"econ_bond_yield_10yr_minus_3mo",
-			"econ_bond_yield_10yr_minus_ffr",
-			"econ_bond_yield_2yr",
-			"econ_bond_yield_30yr",
-			"econ_bond_yield_3mo",
-			"econ_bond_yield_5yr",
-			"econ_consumer_confidence_oecd",
-			"econ_consumer_sentiment_umich",
-			"econ_fed_ffr",
-			"econ_mortgage_rate_15yr",
-			"econ_mortgage_rate_30yr",
-			"econ_prime_loan_rate",
+		"autocorr": [
+			"return_c2c_lag1_autolag1",
+			"return_c2c_lag1_autolag2",
+			"return_c2c_lag1_autolag3",
 		] 
 	},
 
 	# # Add your list of components below. 
 	# {
+	# 	"autocorr": [
+	# 		"return_c2c_lag1_autolag1",
+	# 		"return_c2c_lag1_autolag2",
+	# 		"return_c2c_lag1_autolag3",
+	# 	], 
 	# 	"market_internal": [
-			
+	#		"vix_close"
 	# 	], 
 	# 	"valuation": [
 
@@ -630,7 +616,9 @@ EXPERIMENT_COMPS = [
 	# 		"rp_css",
 	# 	], 
 	# 	"techind": [
-
+	# 		"techind_macd_MACD_Hist", 
+	# 		"techind_macd_MACD", 
+	# 		"techind_macd_MACD_Signal", 
 	# 	], 
 	# 	"candlestick": [
 
@@ -639,33 +627,33 @@ EXPERIMENT_COMPS = [
 ]
 
 # Assign different model choices and default parameters to experiment with. 
-EXPERIMENT_MODEL = {
-	# ElasticNet. 
-	"els": {
-		"model": '''ElasticNet(
-			alpha=1, l1_ratio=.5, max_iter=5000, random_state=PARAM_SEED
-		)''', 
-		"param_dist": '''{
-			"l1_ratio"  : [.5, .3, .1], 
-		}''', 
-		"bayes_opt": False, 
-	}, 
-	# Random Forest. 
-	"rfr": {
-		"model": '''xgb.XGBRFRegressor(
-			learning_rate=1, n_estimators=100, max_depth=8, base_score=0.5, 
-			colsample_bynode=.5, reg_lambda=0.1, reg_alpha=1.0, min_split_loss=0.05,
-			min_child_weight=1, subsample=0.5, tree_method="auto", booster="gbtree", 
-			num_parallel_tree=2, objective="reg:squarederror", eval_metric="rmse", 
-			seed=PARAM_SEED, 
-		)''', 
-		"param_dist": '''{
-			"max_depth"         : optuna.distributions.IntUniformDistribution(3, 8), 
-			"n_estimators"      : optuna.distributions.IntUniformDistribution(100, 500), 
-			"min_child_weight"  : optuna.distributions.IntUniformDistribution(1, 20), 
-		}''', 
-		"bayes_opt": True, 
-	}, 
+EXPERIMENT_MODEL_RG = {
+	# # ElasticNet. 
+	# "els": {
+	# 	"model": '''ElasticNet(
+	# 		alpha=1, l1_ratio=.5, max_iter=5000, random_state=PARAM_SEED
+	# 	)''', 
+	# 	"param_dist": '''{
+	# 		"l1_ratio"  : [.5, .3, .1], 
+	# 	}''', 
+	# 	"bayes_opt": False, 
+	# }, 
+	# # Random Forest. 
+	# "rfr": {
+	# 	"model": '''xgb.XGBRFRegressor(
+	# 		learning_rate=1, n_estimators=100, max_depth=8, base_score=0.5, 
+	# 		colsample_bynode=.5, reg_lambda=0.1, reg_alpha=1.0, min_split_loss=0.05,
+	# 		min_child_weight=1, subsample=0.5, tree_method="auto", booster="gbtree", 
+	# 		num_parallel_tree=2, objective="reg:squarederror", eval_metric="rmse", 
+	# 		seed=PARAM_SEED, 
+	# 	)''', 
+	# 	"param_dist": '''{
+	# 		"max_depth"         : optuna.distributions.IntUniformDistribution(3, 8), 
+	# 		"n_estimators"      : optuna.distributions.IntUniformDistribution(100, 500), 
+	# 		"min_child_weight"  : optuna.distributions.IntUniformDistribution(1, 20), 
+	# 	}''', 
+	# 	"bayes_opt": True, 
+	# }, 
 	# XGBoost. 
 	"xgb": {
 		"model": '''xgb.XGBRegressor(
@@ -682,4 +670,22 @@ EXPERIMENT_MODEL = {
 		}''', 
 		"bayes_opt": True, 
 	}, 
+}
+
+EXPERIMENT_MODEL_CL = {
+	"rfr": {
+		"model": '''xgb.XGBRFClassifier(
+			learning_rate=1, n_estimators=100, max_depth=8, base_score=0.5, 
+			colsample_bynode=.5, reg_lambda=0.1, reg_alpha=1.0, min_split_loss=0.05,
+			min_child_weight=1, subsample=0.5, tree_method="auto", booster="gbtree", 
+			num_parallel_tree=2, objective="binary:logistic", eval_metric="aucpr", 
+			seed=PARAM_SEED, 
+		)''', 
+		"param_dist": '''{
+			"max_depth"         : optuna.distributions.IntUniformDistribution(3, 8), 
+			"n_estimators"      : optuna.distributions.IntUniformDistribution(100, 500), 
+			"min_child_weight"  : optuna.distributions.IntUniformDistribution(1, 20), 
+		}''', 
+		"bayes_opt": True, 
+	}
 }
