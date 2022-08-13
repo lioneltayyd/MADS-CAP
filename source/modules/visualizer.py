@@ -126,3 +126,43 @@ def plot_multiverse_analysis(data, x:str, y:str, err_minmax:tuple, format_text:s
 		) 
 
 	return (chart + errorbars).interactive() 
+
+
+
+# %%
+def plot_timeseries(df:pd.DataFrame, x:str, y:str, tickers:list, ylim=[-1,1], format_text:str=".2f"): 
+
+    # For concatnating multiple visuals. 
+    combined_plot = alt.vconcat() 
+
+    # Columns you to visualise.
+    cols_to_vis = [x, y, "ticker"]
+
+    # Plot multiple visuals. 
+    for ticker in tickers: 
+        df_fil = df.loc[df["ticker"] == ticker, cols_to_vis].copy() 
+
+        # Base encoding. 
+        base = alt.Chart(df_fil) \
+            .encode(
+                x=alt.X(
+                    f"{x}:T", 
+                    axis=alt.Axis(title="", titleFontSize=10, labelFontSize=10, labelAngle=0), 
+                ),
+                y=alt.Y(
+                    f"{y}:Q", 
+                    axis=alt.Axis(title=y, titleFontSize=10, labelFontSize=10), 
+					scale=alt.Scale(domain=ylim), 
+                ), 
+                tooltip=[
+                    alt.Tooltip(f"{y}:Q", title=y, format=format_text), 
+                ], 
+            ) \
+            .properties(title=ticker, height=100, width=700) 
+
+        # Visualisation approach. 
+        chart = base.mark_line(color="orange") 
+
+        combined_plot &= chart.interactive() 
+
+    return combined_plot
