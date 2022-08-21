@@ -1,6 +1,7 @@
 # %% 
 # Python modules. 
 import csv 
+import numpy as np
 import backtrader as bt 
 from backtrader.feeds import PandasData 
 
@@ -176,6 +177,7 @@ class RuleBasedStrategy(ConfigStrategy):
         ("n_positions", 10),
         ("min_positions", 5),
         ("include_short", True),
+        ("topn", -1),
         ("verbose", False),
         ("log_file", "backtest.csv"),
     )
@@ -185,35 +187,43 @@ class RuleBasedStrategy(ConfigStrategy):
 
         today = self.datas[0].datetime.date()
 
-        ls_short, ls_longs = set(), set()
+        ls_short, ls_longs = [], []
 
         for data in self.datas:
             # If the signal is detected, append to the list for ordering later. 
             # Will only include shorting if the user wants it. 
             if data.datetime.date() == today:
                 if data.signal[0] == 1:
-                    ls_longs.add(data._name)
+                    ls_longs.append(data._name)
                 elif data.signal[0] == -1 and self.p.include_short:
-                    ls_short.add(data._name)
+                    ls_short.append(data._name)
                     
         n_short, n_longs = len(ls_short), len(ls_longs)
         
         # Only take positions if at least min N longs and short. 
         if n_short < self.p.min_positions and n_longs < self.p.min_positions:
-            ls_short, ls_longs = set(), set()
+            ls_short, ls_longs = [], []
 
         # Close the position. 0 here will set the target percentage to 0 when multiplied. 
         positions = [d._name for d, pos in self.getpositions().items() if pos]
         for ticker in positions:
-            if ticker not in ls_longs.union(ls_short):
+            if ticker not in ls_longs + ls_short:
                 self.order_target_percent(data=ticker, target=0)
                 self.log(f"{ticker}, CLOSING ORDER CREATED")
 
         # Set target percentage of porfolio to invest into. X % of the porfolio will be 
-        # divided equally among the N position or short / long. Short "borrows cash" so 
+        # divided equally among the N position for short / long. Short "borrows cash" so 
         # you have another X % of "borrowed money" for short here. 
         short_target = -1 / max(self.p.n_positions, n_short)
         longs_target =  1 / max(self.p.n_positions, n_longs)
+
+        # Random select the top N or all stocks. If it exeeds the top N, pick N. 
+        if ls_short and ls_longs: 
+            np.random.seed(42) 
+            topn_short = min(self.p.topn, len(ls_short))
+            topn_longs = min(self.p.topn, len(ls_longs))
+            ls_short = np.random.choice(ls_short, topn_short) if self.p.topn > 0 else ls_short
+            ls_longs = np.random.choice(ls_longs, topn_longs) if self.p.topn > 0 else ls_longs
 
         # Take or exit the position. If (data:=str) it will automatically get the ticker data. 
         # The target percent here indicates the percentage of porfolio to invest into. 

@@ -157,10 +157,8 @@ docker
 model 
 Dataset 
 
-docs/images 
 docs/proposal 
 docs/diagram 
-docs/report 
 docs/visualisation 
 
 source/personal/*
