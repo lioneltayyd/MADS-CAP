@@ -44,7 +44,7 @@ get_wrdssentiment | To get RavenPack sentiment data.
 
 --- 
 
-## __Guide On Initial Setup__
+## __Guide On Initial Setup (Mac Intel)__
 
 1.  Clone the repo to your directory and create a new branch. 
 
@@ -90,7 +90,7 @@ get_wrdssentiment | To get RavenPack sentiment data.
 
 1.  For VSCode users, press CMD + SHIFT + P and type `Reload Window` to reload the window after installing
     the python packages. Then press press CMD + SHIFT + P again and type `Select Interpreter` to 
-    select the python interpreter `MADS-CAP` 
+    select the python interpreter `MADS-CAP-...` 
     to run the notebook. 
 
 ---
