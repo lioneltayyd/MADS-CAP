@@ -13,6 +13,7 @@ Folder Name | Description
 source/config_py | Contain all the parameter configuration in python. 
 source/modules | Contain all the custom functions. 
 source/notebooks | Contain all the steps for processing and modelling. 
+source/backtest_explore | Contain all backtest exploration. 
 sh | Contain all the CLI references for executing specific tasks. 
 pipfile | For setting up the `pipenv` and tracking all the installed dependencies. 
 
@@ -20,9 +21,26 @@ pipfile | For setting up the `pipenv` and tracking all the installed dependencie
 
 ## __Notebook Content__
 
+You need API secrets to specific notebooks. [View this](https://github.com/lioneltayyd/MADS-CAP/blob/main/env_example.txt) 
+to enter the secrets. You also need a WRDS access to get the WRDS sentiment data (free for Michigan students and staffs). 
+Otherwise, you can download the datasets from Google Drive.
+
 Notebook Name | Description
 --- | ---
-... | TBA...
+backtesting_framework | General framework for backtesting. 
+build_ml_regression | General framework for ML development. 
+compile_features | To consolidate all the features gathered from different data sources. 
+get_fredeconometric | To get econometrics data. 
+get_fundamental | To get fundamental and filter stocks by fundamental quality.
+get_technical | To get technical data for both indicators and candlesticks. 
+get_wrdssentiment | To get RavenPack sentiment data.
+
+--- 
+
+## __Required Data Source Downloads__
+
+1.  Download the `dataset` folder from [Google Drive](https://drive.google.com/drive/folders/1sgpZq_FNcWTuYZ-bU54LLtaGjtytRJlR?usp=sharing) 
+    and put them in the the main / root project directory. 
 
 --- 
 
@@ -72,15 +90,8 @@ Notebook Name | Description
 
 1.  For VSCode users, press CMD + SHIFT + P and type `Reload Window` to reload the window after installing
     the python packages. Then press press CMD + SHIFT + P again and type `Select Interpreter` to 
-    select the python interpreter `MADS-M2-estimating-news-impact-on-financial-market` 
+    select the python interpreter `MADS-CAP` 
     to run the notebook. 
-
---- 
-
-## __Required Data Source Downloads__
-
-1.  Download the `dataset` folder from [Google Drive](https://drive.google.com/drive/u/4/folders/1sgpZq_FNcWTuYZ-bU54LLtaGjtytRJlR) 
-    and put them in the the main / root project directory. 
 
 ---
 
