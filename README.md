@@ -79,7 +79,7 @@ Notebook Name | Description
 
 ## __Required Data Source Downloads__
 
-1.  Download the `dataset` folder from [Google Drive](https://drive.google.com/drive/u/4/folders/1sgpZq_FNcWTuYZ-bU54LLtaGjtytRJlR) 
+1.  Download the `dataset` folder from [Google Drive](https://drive.google.com/drive/folders/19BuyYrHyAG_CP9X8oFz0PCuKXzAfmOAI?usp=sharing) 
     and put them in the the main / root project directory. 
 
 ---
