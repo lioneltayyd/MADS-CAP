@@ -23,8 +23,7 @@ pipfile | For setting up the `pipenv` and tracking all the installed dependencie
 
 You need API secrets to specific notebooks. [View this](https://github.com/lioneltayyd/MADS-CAP/blob/main/env_example.txt) 
 to enter the secrets. You also need a WRDS access to get the WRDS sentiment data (free for Michigan students and staffs). 
-Otherwise, you can download the dataset from [Google Drive](https://drive.google.com/drive/folders/1sgpZq_FNcWTuYZ-bU54LLtaGjtytRJlR?usp=sharing)
-to compile the features and run the backtesting framework. 
+Otherwise, you can download the datasets from Google Drive.
 
 Notebook Name | Description
 --- | ---
@@ -35,6 +34,13 @@ get_fredeconometric | To get econometrics data.
 get_fundamental | To get fundamental and filter stocks by fundamental quality.
 get_technical | To get technical data for both indicators and candlesticks. 
 get_wrdssentiment | To get RavenPack sentiment data.
+
+--- 
+
+## __Required Data Source Downloads__
+
+1.  Download the `dataset` folder from [Google Drive](https://drive.google.com/drive/folders/1sgpZq_FNcWTuYZ-bU54LLtaGjtytRJlR?usp=sharing) 
+    and put them in the the main / root project directory. 
 
 --- 
 
@@ -86,13 +92,6 @@ get_wrdssentiment | To get RavenPack sentiment data.
     the python packages. Then press press CMD + SHIFT + P again and type `Select Interpreter` to 
     select the python interpreter `MADS-CAP` 
     to run the notebook. 
-
---- 
-
-## __Required Data Source Downloads__
-
-1.  Download the `dataset` folder from [Google Drive](https://drive.google.com/drive/folders/1sgpZq_FNcWTuYZ-bU54LLtaGjtytRJlR?usp=sharing) 
-    and put them in the the main / root project directory. 
 
 ---
 
