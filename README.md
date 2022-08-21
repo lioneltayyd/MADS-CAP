@@ -26,7 +26,7 @@ Notebook Name | Description
 
 --- 
 
-## __Guide On Initial Setup__
+## __Guide On Initial Setup (Mac Intel)__
 
 1.  Clone the repo to your directory and create a new branch. 
 

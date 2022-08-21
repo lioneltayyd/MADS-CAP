@@ -8,17 +8,17 @@ In 1952, Harry Markowitz introduced Modern portfolio theory  (MPT ) which is a
 
 Based on Markowitz’s MPT theory,  William Forsyth Sharpe, as one of the originators of the capital asset pricing model (CAPM). CAPM model is used to calculate the valuation of individual stock by using security market line (SML)[5]. 
 
-![Untitled](images/formula_1.png)
+![formula_1](images/formula_1.png)
 
 Both Markowitz and Sharpe believe that risk is the source of return, when you fully diversified your portfolio, you will only take the systematic risk. Sharpe further proposed that, in an efficient market where prices should immediately reflect all public information, the individual stock price will be fully discovered by using arbitrage. 
 
 Till 1976, Stephen Ross proposed the arbitrage pricing theory (APT), which is a multi-factor model for asset pricing. APT argues that when opportunities for arbitrage are exhausted in a given period, then the expected return of an asset is a linear function of various factors or theoretical market indices, where sensitivities of each factor is represented by a factor-specific beta coefficient  or factor loading[6][7]. In contrast to the CAPM, it assumes that opportunities for superior returns due to mispricing may exist but will quickly be arbitraged away, and the the expected return of an asset *j*  is a linear  function of the asset's sensitivities to the *n*  factors.
 
-![Untitled](images/formula_2.png)
+![formula_2](images/formula_2.png)
 
 In 1993, the Eugene Fama Kenneth French proposed three-factor model. In traditional CAPM model, Sharp only consider market risk, and in APT theory Ross has proposed a general multi-factor model, but no more detailed information about those factors.  Fama and French identified additional risk factors: (1) size(small caps) ; (2) valuation (book-to-market ratio). [8][9]
 
-![Untitled](images/formula_3.png)
+![formula_3](images/formula_3.png)
 
 Along this line, more and more theories have been discovered and applied, such as: 
 
