@@ -96,8 +96,8 @@ The mentioned research is not bouned at the theoretical level and is widely used
 
 We plan to build an investment compass from scratch, to filter out the right company, and pick the right time to invest and exit. The compass is based on two key hypotheses:
 
-- **hypotheses 1**: “In the short run, the market is a voting machine but in the long run, it is a weighing machine.” [14]This quote means that you need to keep your eyes on thigh-quality companies, not chasing the cigar butts
-- **hypotheses 2**:  [Mr.Market](http://Mr.Market) is often irrational and moody. This behavior of Mr. Market allows the investor to wait until Mr. Market is in a 'pessimistic mood' and offers low sale price[14]
+- **hypotheses 1**: “In the short run, the market is a voting machine but in the long run, it is a weighing machine.” [14]This quote means that you need to keep your eyes on high-quality companies, not chasing the cigar butts
+- **hypotheses 2**:  [Mr.Market](http://Mr.Market) is often irrational and moody. This behavior of Mr. Market allows the investor to wait until Mr. Market is in a 'pessimistic mood' and offers low share price[14]
 
 The roadmap we borrowed from Machine Learning for Algorithmic Trading[15]. Standing on the giant’s shoulder, we divide our process into the following parts:
 
@@ -227,21 +227,10 @@ We explored multiple features from variety of sources (WRDS, Yahoo, Fred, TA-Lib
 
 1. __Backtest on top 50 percentile SP500 stocks:__ When we picked the 200 stocks (taken from the 50 percentile after performing a filtering on fundamental data). The return significanly underperform SP500. The reason for the underperformance and low return using the "in and out" approach may be related to the 2nd pointer where we compare the higher vs lower quality stocks. Nonetheless, when we perform a "buy and hold" approach on the 200 stocks starting from year 2000 and hold them for more than 10 years, the result yields a significant return. 
 
-    ---
-
-    ### __Performance using the "in and out" approach:__
-
     ![output_200_stocks](images/output_200_stocks_2.png)
     ![output_200_stocks](images/output_200_stocks_1.png)
 
-    ---
-
-    ### __Performance using the "buy and hold" approach:__
-
-    ![output_200_stocks](images/output_200_stocks_4.png)
-    ![output_200_stocks](images/output_200_stocks_3.png)
-
-1. __Backtest on higher vs lower quality stocks:__ When we picked the high quality stocks (AAPL, AMZN, MSFT, JNJ, LMT, JPM, GS), we obtain an annual return of around 4–6% which is roughly equal to the average for SP500. As for medium quality stocks (BA, ATVI, HAL, ETSY, UPS, PWR), we see it underperforms the SP500 with around 2–3%. We know we are leaking the future information into the backtest by selecting the known high quality stocks, but this is to compare the performance difference between the high and medium quality stocks (same features and condition parameters). The conditions and indicators rely on good quality and stable stocks, so fundamental quality, domain knowledge of the management, and business potential is more important. This is usually obtained via qualitative research instead of quantitative. 
+1. __Backtest on higher vs lower quality stocks:__ When we picked the high quality stocks (AAPL, AMZN, MSFT, JNJ, LMT, JPM, GS), we obtain an annual return of around 4–6% which is roughly equal to the average for SP500. As for medium quality stocks (BA, ATVI, HAL, ETSY, UPS, PWR), we see it underperforms the SP500 with around 2–3%. We know we are leaking the future information into the backtest by selecting the known high quality stocks, but this is to compare the performance difference between the high and medium quality stocks (same features and condition parameters). The conditions and ndicators rely on good quality and stable stocks, so fundamental quality, domain knowledge of the management, and business potential is more important. This is usually obtained via qualitative research instead of quantitative. 
 
     ---
 
@@ -257,10 +246,10 @@ We explored multiple features from variety of sources (WRDS, Yahoo, Fred, TA-Lib
     ![output_lower_quality_stocks](images/output_lower_quality_stocks_2.png)
     ![output_lower_quality_stocks](images/output_lower_quality_stocks_1.png)
 
-1. __Comparison between ”buy and hold” vs “in and out” approach:__ We also compared the result between “buy and hold” and “in and out” approaches on good quality and growing stocks. The “buy and hold” approach which is around 16% (AAPL, AMZN, MSFT, JNJ, LMT, JPM, GS) outperforms the “in and out” significantly. The “buy and hold” approach will buy stocks at around year 2000 and hold them for more than 10 years. Although the “buy and hold” suffers a significant amount drawdown (max 40% above) during recession or market crash, it stills outperform the “in and out” (max drawdown around 25–35%) by a significant degree due to the cumulative compounding effects. Nonetheless, the return from “in and out” approach will be different for options or futures given the difference in scale between stocks and derivatives. 
+1. __Comparison between ”buy and hold” vs “in and out” approach:__ We also compared the result between “buy and hold” (the selected 200 stocks) and “in and out” approaches on good quality and growing stocks (AAPL, AMZN, MSFT, JNJ, LMT, JPM, GS). The “buy and hold” approach which is around 16% of return outperforms the “in and out” (around 4–6% return) significantly. The “buy and hold” approach will buy stocks at around year 2000 and hold them for around 20 years. Although the “buy and hold” suffers a significant amount drawdown (max 40% above) during recession or market crash, it stills outperform the “in and out” (max drawdown around 25–35%) by a significant degree due to the cumulative compounding effects. Nonetheless, the return from “in and out” approach will be different for options or futures given the difference in scale between stocks and derivatives. 
 
-    ![buyhold_inout](images/output_buyhold_inout_2.png)
-    ![buyhold_inout](images/output_buyhold_inout_1.png)
+    ![output_200_stocks](images/output_200_stocks_4.png)
+    ![output_200_stocks](images/output_200_stocks_3.png)
 
 # Conclusion & the Next
 In general, we try to use the following roadmap:
