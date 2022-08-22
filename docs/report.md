@@ -1,4 +1,31 @@
-# Capstone Report
+# Exploring and comparing RuleBased algorithmic model against SP500
+
+Yee Dang Tay, Qi Zhang ,Junkyeong Lee 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [Exploring and comparing RuleBased algorithmic model against SP500](#exploring-and-comparing-rulebased-algorithmic-model-against-sp500)
+- [The background](#the-background)
+- [The purpose](#the-purpose)
+- [Generating Ideas](#generating-ideas)
+  - [The Ideas](#the-ideas)
+  - [Why Choose S&P 500](#why-choose-sp-500)
+- [Sourcing  & Processing Data](#sourcing-processing-data)
+  - [How to get fundamental data?](#how-to-get-fundamental-data)
+  - [How to Acquire and Process OHLCV data](#how-to-acquire-and-process-ohlcv-data)
+- [Backtesting & Evaluation](#backtesting-evaluation)
+  - [Features & model approach](#features-model-approach)
+  - [Backtesting process](#backtesting-process)
+  - [Backtest disclaimer](#backtest-disclaimer)
+  - [Generating signals from each feature](#generating-signals-from-each-feature)
+  - [Backtesting result](#backtesting-result)
+- [Conclusion & the Next](#conclusion-the-next)
+- [Team member & the contribution](#team-member-the-contribution)
+- [Reference:](#reference)
+
+<!-- /code_chunk_output -->
+
 
 # The background
 
@@ -8,17 +35,42 @@ In 1952, Harry Markowitz introduced Modern portfolio theory  (MPT ) which is a
 
 Based on Markowitz’s MPT theory,  William Forsyth Sharpe, as one of the originators of the capital asset pricing model (CAPM). CAPM model is used to calculate the valuation of individual stock by using security market line (SML)[5]. 
 
-![formula_1](images/formula_1.png)
+$$
+\cfrac{E(R_i)-R_f}{\beta_i}=E(R_m)-R_f
+$$
+
+Where:
+
+- $E(R_i)$ is the expected return on the capital asset
+- $R_f$ is the risk-free rate of interest such as interest arising from government bonds
+- $\beta_i$ s the sensitivity  of the expected excess asset returns to the expected excess market returns, or also $\beta_i = \frac {Cov(R_i,R_m)}{Var(R_m)}$
+- $E(R_m)$ is the expected return of the market
 
 Both Markowitz and Sharpe believe that risk is the source of return, when you fully diversified your portfolio, you will only take the systematic risk. Sharpe further proposed that, in an efficient market where prices should immediately reflect all public information, the individual stock price will be fully discovered by using arbitrage. 
 
 Till 1976, Stephen Ross proposed the arbitrage pricing theory (APT), which is a multi-factor model for asset pricing. APT argues that when opportunities for arbitrage are exhausted in a given period, then the expected return of an asset is a linear function of various factors or theoretical market indices, where sensitivities of each factor is represented by a factor-specific beta coefficient  or factor loading[6][7]. In contrast to the CAPM, it assumes that opportunities for superior returns due to mispricing may exist but will quickly be arbitraged away, and the the expected return of an asset *j*  is a linear  function of the asset's sensitivities to the *n*  factors.
 
-![formula_2](images/formula_2.png)
+$r_j = \alpha_j + \beta_{j1} f_1 + \beta_{j2} f_2+ \cdot\cdot\cdot +\beta_{jn} f_n + \epsilon_j$
+
+Where:
+
+- $\alpha_j$ is a constant for asset j
+- $f_n$ is a systematic factor
+- $\beta_{jn}$ is the sensitivity of the jth asset to factor n, also called factor loading,
+- and $\epsilon_j$ is the risky asset’s idiosyncratic random shock with mean zero
 
 In 1993, the Eugene Fama Kenneth French proposed three-factor model. In traditional CAPM model, Sharp only consider market risk, and in APT theory Ross has proposed a general multi-factor model, but no more detailed information about those factors.  Fama and French identified additional risk factors: (1) size(small caps) ; (2) valuation (book-to-market ratio). [8][9]
 
-![formula_3](images/formula_3.png)
+Then two factors was added to CAPM to reflect the portfolio’s exposure to these two classes:
+
+$r = R_f + \beta(R_m -R_f) + b_s*SMB + b_v * HML + \alpha$
+
+Here:
+
+- r is the portfolio’s expected rate of return
+- $R_f$ is the risk-free rate of interest such as interest arising from government bonds
+- $R_m$ is the return of the market
+- The "three factor" *β*  is analogous to the classical *β*  but not equal to it, since there are now two additional factors to do some of the work. *SMB*  stands for "**S** mall [market capitalization] **M**inus **B**ig" and *HML* for "**H**igh [book-to-market ratio] **M**inus **L**ow"; they measure the historic excess returns of small caps over big caps and of value stocks over growth stocks.
 
 Along this line, more and more theories have been discovered and applied, such as: 
 
@@ -141,9 +193,8 @@ OHLCV data is really easy to acqure. We can get from the following source:
 - **Alpha Vantage**
 - **Quandl**
 
-We choose to use Alpha Vantage, especially the adjusted share price. Because of the split, the dividend will change the share price. So we use OHLCV in two way:
+We choose to use Alpha Vantage, especially the adjusted share price. Because of the split, the dividend will change the share price. So we use OHLCV in the following way:
 
-- OHLCV combined with (earning per share)EPS, (revenue per share)RPS, (bookvalue per share)BPS to calculate (price to earning)PE, (price to revenue)PS,(price to bookvaue)PB. Those indicators will be used to evaluate the share price relative to fundamental data is high or low
 - Use OHLCV individually. We will use simple arithmetic to construct factors to measure the change of variables over time, to measure the ratios between data series etc. There are some most common factors:
     - RSI: relative strength index
     - MACD: Moving average convergence divergence
@@ -174,29 +225,68 @@ We explored multiple features from variety of sources (WRDS, Yahoo, Fred, TA-Lib
 
 ## Backtesting result 
 
-- __Backtest on top 50 percentile SP500 stocks:__ When we picked the 200 stocks (taken from the 50 percentile after performing a filtering on fundamental data). The reason for the underperformance and low return may be due to the subsequent pointer when we compare the higher vs lower quality stocks. 
+1. __Backtest on top 50 percentile SP500 stocks:__ When we picked the 200 stocks (taken from the 50 percentile after performing a filtering on fundamental data). The return significanly underperform SP500. The reason for the underperformance and low return using the "in and out" approach may be related to the 2nd pointer where we compare the higher vs lower quality stocks. Nonetheless, when we perform a "buy and hold" approach on the 200 stocks starting from year 2000 and hold them for more than 10 years, the result yields a significant return. 
+
+    ---
+
+    ### __Performance using the "in and out" approach:__
 
     ![output_200_stocks](images/output_200_stocks_2.png)
     ![output_200_stocks](images/output_200_stocks_1.png)
 
-- __Backtest on higher vs lower quality stocks:__ When we picked the high quality stocks (AAPL, AMZN, MSFT, JNJ, LMT, JPM, GS), we obtain an annual return of around 4–6% which is roughly equal to the average for SP500. As for medium quality stocks (BA, ATVI, HAL, ETSY, UPS, PWR), we see it underperforms the SP500 with around 2–3%. We know we are leaking the future information into the backtest by selecting the known high quality stocks, but this is to compare the performance difference between the high and medium quality stocks (same features and condition parameters). The conditions and indicators rely on good quality and stable stocks, so fundamental quality and domain knowledge of the management, and business potential is more important. This is usually obtained via qualitative research instead of quantitative. 
+    ---
 
-    __Higher quality stocks result:__
+    ### __Performance using the "buy and hold" approach:__
+
+    ![output_200_stocks](images/output_200_stocks_4.png)
+    ![output_200_stocks](images/output_200_stocks_3.png)
+
+1. __Backtest on higher vs lower quality stocks:__ When we picked the high quality stocks (AAPL, AMZN, MSFT, JNJ, LMT, JPM, GS), we obtain an annual return of around 4–6% which is roughly equal to the average for SP500. As for medium quality stocks (BA, ATVI, HAL, ETSY, UPS, PWR), we see it underperforms the SP500 with around 2–3%. We know we are leaking the future information into the backtest by selecting the known high quality stocks, but this is to compare the performance difference between the high and medium quality stocks (same features and condition parameters). The conditions and indicators rely on good quality and stable stocks, so fundamental quality, domain knowledge of the management, and business potential is more important. This is usually obtained via qualitative research instead of quantitative. 
+
+    ---
+
+    ### __Higher quality stocks result:__
 
     ![output_higher_quality_stocks](images/output_higher_quality_stocks_2.png)
     ![output_higher_quality_stocks](images/output_higher_quality_stocks_1.png)
 
-    __Lower quality stocks result:__
+    ---
+
+    ### __Lower quality stocks result:__
 
     ![output_lower_quality_stocks](images/output_lower_quality_stocks_2.png)
     ![output_lower_quality_stocks](images/output_lower_quality_stocks_1.png)
 
-- __Comparison between ”buyhold” vs “inout” approach:__ We also compared the result between “buy and hold” and “in and out” approaches on good quality and growing stocks. The “buy and hold” approach which is around 16% (AAPL, AMZN, MSFT, JNJ, LMT, JPM, GS) outperforms the “in and out” significantly. The “buy and hold” approach will buy stocks at a random time and hold them for more than 10 years. Although the “buy and hold” suffers a significant amount drawdown (max 40% above) during recession or market crash, it stills outperform the “in and out” (max drawdown around 25–35%) by a significant degree due to the cumulative compounding effects. Nonetheless, the return from “in and out” approach will be different for options or futures given the difference in scale between stocks and derivatives. 
+1. __Comparison between ”buy and hold” vs “in and out” approach:__ We also compared the result between “buy and hold” and “in and out” approaches on good quality and growing stocks. The “buy and hold” approach which is around 16% (AAPL, AMZN, MSFT, JNJ, LMT, JPM, GS) outperforms the “in and out” significantly. The “buy and hold” approach will buy stocks at around year 2000 and hold them for more than 10 years. Although the “buy and hold” suffers a significant amount drawdown (max 40% above) during recession or market crash, it stills outperform the “in and out” (max drawdown around 25–35%) by a significant degree due to the cumulative compounding effects. Nonetheless, the return from “in and out” approach will be different for options or futures given the difference in scale between stocks and derivatives. 
 
     ![buyhold_inout](images/output_buyhold_inout_2.png)
     ![buyhold_inout](images/output_buyhold_inout_1.png)
 
 # Conclusion & the Next
+In general, we try to use the following roadmap:
+
+- select the high quality targets
+- generate the signal by using features, such as VIX, MACD, RSI
+- compare different investment strategy, buy&hold or in&out
+- backtest the strategy
+
+In nature, this is rule-based method, and we truly found that:
+- high quality matters
+- if you find a high quality companies, you buy and hold will be much beter than seeking sigals to acquire potential short-term return
+
+This conclusion is in consistent with Warren Buffett's investment idea. Just as Carol Loomis, an observer and friend of Warren Buffett for many years, wrote that "... The kind of merchandise that Buffett wants is simply described also 'good business'. To him that essentially means operations with strong franchises, abover-average return on equity, a relatively small need for capital investment,and the capacity therefore to throw off case. This list may sound like motherhoold and apple pie...". 
+
+But we don't think we should stop here. In my view, investing is a combination of science and psychology. Information and the evolving analytical method can help us to better understand the hidden, volatile, and emotional investing world. There are still a lot of things can be continually  dug deeper.
+
+- economic cycle analysis: it can help us to understand how to allocate asset not just in stock but in bond, derevatives, commodities, exchange rate etc
+- expand to machine-learning based to find more features in timming selection
+- position control analysis: when odds is on your side, you can earn more; when odds is opposite you, you can lose less
+- explore more strategy: not just long, but also short
+
+
+# Team member & the contribution
+The whole project is really a team effort. At the beginning, Yee Dang Tay and Qi Zhang were involved in data collection and exploration to get the right data source. Qi Zhang focus on getting reliable fundamental data and trading data, and Yee Dang Tay spent time on generate the whole workflow and collecting more general dataset, which include economy data, emotional data, alternative data etc. Then Qi Zhang use domain knowledge to filter out the high quality stocks. Based on that Yee Dang Tay put huge efforts on feature selecting, and work with Junkyeong Lee in backtest and validation. Along the project progress, all of us work close to each other in brainstorming, data manipulation, visualization, model evaluation, and report writing.
+
 
 ...
 
